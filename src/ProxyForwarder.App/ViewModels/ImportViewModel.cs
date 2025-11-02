@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Collections.ObjectModel;
+using System.Net.Http;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,11 +43,18 @@ public partial class ImportViewModel : ObservableObject
 
     private async Task LoadRegionsAsync()
     {
-        var tk = await _secure.GetTokenAsync() ?? Token;
-        if (string.IsNullOrWhiteSpace(tk)) return;
-        var list = await _client.GetRegionsAsync(tk, CancellationToken.None);
-        Regions = new ObservableCollection<Region>(list);
-        Token = tk;
+        try
+        {
+            var tk = await _secure.GetTokenAsync() ?? Token;
+            if (string.IsNullOrWhiteSpace(tk)) { return; }
+            var list = await _client.GetRegionsAsync(tk, CancellationToken.None);
+            Regions = new ObservableCollection<Region>(list);
+            Token = tk;
+        }
+        catch (HttpRequestException ex)
+        {
+            System.Windows.MessageBox.Show(ex.Message, "Load Regions failed");
+        }
     }
 
     private async Task ImportAsync()
