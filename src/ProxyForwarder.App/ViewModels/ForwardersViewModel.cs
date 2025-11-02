@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +41,9 @@ public partial class ForwardersViewModel : ObservableObject
     private async Task LoadAsync()
     {
         var all = await _repo.GetAllAsync();
-        Rows = new ObservableCollection<ForwarderRow>(all.Select(p => new ForwarderRow(p)));
+        // Filter out expired proxies
+        var active = all.Where(p => p.ExpirationDate == null || p.ExpirationDate > DateTime.Now).ToList();
+        Rows = new ObservableCollection<ForwarderRow>(active.Select(p => new ForwarderRow(p)));
     }
 
     private async Task ToggleAllAsync()
@@ -57,8 +60,20 @@ public partial class ForwardersViewModel : ObservableObject
         {
             if (row.LocalPort == 0) row.LocalPort = _ports.Next();
             row.Status = "Starting...";
-            return _forwarder.StartAsync(row.Proxy, row.LocalPort, CancellationToken.None)
-                .ContinueWith(_ => row.Status = "Running");
+            return Task.Run(async () =>
+            {
+                try
+                {
+                    // Wrap in try-catch to suppress any SSL/certificate popups
+                    await _forwarder.StartAsync(row.Proxy, row.LocalPort, CancellationToken.None);
+                    row.Status = "Running";
+                }
+                catch (Exception ex)
+                {
+                    row.Status = "Error";
+                    Debug.WriteLine($"Error starting forwarder: {ex.Message}");
+                }
+            });
         }
     }
 }
