@@ -120,12 +120,19 @@ public sealed class ForwarderService : IForwarderService, IAsyncDisposable
 
 public sealed class PortAllocator
 {
-    private readonly int _min;
-    private readonly int _max;
+    private int _min;
+    private int _max;
     private int _next;
 
     public PortAllocator(int min = 11000, int max = 14999)
     { _min = min; _max = max; _next = min; }
+
+    public void UpdateRange(int min, int max)
+    {
+        _min = min;
+        _max = max;
+        _next = min; // Reset to new min
+    }
 
     public int Next()
     {

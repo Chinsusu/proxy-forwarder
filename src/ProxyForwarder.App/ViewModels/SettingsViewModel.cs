@@ -9,6 +9,7 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly ISettingsProvider _settings;
     private readonly IUdpBlocker _udp;
+    private readonly ProxyForwarder.Forwarding.PortAllocator _ports;
 
     [ObservableProperty] private int portRangeMin;
     [ObservableProperty] private int portRangeMax;
@@ -21,6 +22,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         _settings = (ISettingsProvider)App.HostInstance!.Services.GetRequiredService(typeof(ISettingsProvider));
         _udp = (IUdpBlocker)App.HostInstance!.Services.GetRequiredService(typeof(IUdpBlocker));
+        _ports = (ProxyForwarder.Forwarding.PortAllocator)App.HostInstance!.Services.GetRequiredService(typeof(ProxyForwarder.Forwarding.PortAllocator));
         PortRangeMin = _settings.Current.PortRangeMin;
         PortRangeMax = _settings.Current.PortRangeMax;
         AutoStartForwarders = _settings.Current.AutoStartForwarders;
@@ -35,6 +37,9 @@ public partial class SettingsViewModel : ObservableObject
         _settings.Current.AutoStartForwarders = AutoStartForwarders;
         _settings.Current.BlockUdpForBrowsers = BlockUdpForBrowsers;
         await _settings.SaveAsync();
+        
+        // Update PortAllocator with new range
+        _ports.UpdateRange(PortRangeMin, PortRangeMax);
         
         try
         {
