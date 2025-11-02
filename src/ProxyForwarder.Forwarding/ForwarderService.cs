@@ -1,3 +1,7 @@
+// <copyright file="ForwarderService.cs" company="ProxyForwarder">
+// Copyright (c) ProxyForwarder. All rights reserved.
+// </copyright>
+
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;

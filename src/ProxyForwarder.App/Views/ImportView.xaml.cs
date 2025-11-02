@@ -1,3 +1,7 @@
+// <copyright file="ImportView.xaml.cs" company="ProxyForwarder">
+// Copyright (c) ProxyForwarder. All rights reserved.
+// </copyright>
+
 using System.Windows;
 using System.Windows.Controls;
 using ProxyForwarder.App.ViewModels;

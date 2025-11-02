@@ -1,3 +1,7 @@
+// <copyright file="ImportViewModel.cs" company="ProxyForwarder">
+// Copyright (c) ProxyForwarder. All rights reserved.
+// </copyright>
+
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -25,10 +29,10 @@ public partial class ImportViewModel : ObservableObject
 
     public ImportViewModel()
     {
-        // Resolve via App.Host DI container
-        _client = (ICloudMiniClient)App.App.HostInstance!.Services.GetRequiredService(typeof(ICloudMiniClient));
-        _repo   = (IProxyRepository)App.App.HostInstance!.Services.GetRequiredService(typeof(IProxyRepository));
-        _secure = (ISecureStorage)App.App.HostInstance!.Services.GetRequiredService(typeof(ISecureStorage));
+        // Resolve via App DI container
+        _client = (ICloudMiniClient)App.HostInstance!.Services.GetRequiredService(typeof(ICloudMiniClient));
+        _repo   = (IProxyRepository)App.HostInstance!.Services.GetRequiredService(typeof(IProxyRepository));
+        _secure = (ISecureStorage)App.HostInstance!.Services.GetRequiredService(typeof(ISecureStorage));
 
         LoadRegionsCommand = new AsyncRelayCommand(LoadRegionsAsync);
         ImportCommand = new AsyncRelayCommand(ImportAsync, CanImport);

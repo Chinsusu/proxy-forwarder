@@ -1,3 +1,7 @@
+// <copyright file="ProxyRepository.cs" company="ProxyForwarder">
+// Copyright (c) ProxyForwarder. All rights reserved.
+// </copyright>
+
 using Microsoft.EntityFrameworkCore;
 using ProxyForwarder.Core.Abstractions;
 using ProxyForwarder.Core.Entities;
@@ -21,5 +25,11 @@ public sealed class ProxyRepository : IProxyRepository
                 await db.Proxies.AddAsync(it);
         }
         await db.SaveChangesAsync();
+    }
+
+    public async Task<IReadOnlyList<ProxyRecord>> GetAllAsync()
+    {
+        await using var db = await _factory.CreateDbContextAsync();
+        return await db.Proxies.AsNoTracking().OrderByDescending(p => p.ImportedAtUtc).ToListAsync();
     }
 }

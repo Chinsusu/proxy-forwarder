@@ -1,3 +1,7 @@
+// <copyright file="ForwarderDbContext.cs" company="ProxyForwarder">
+// Copyright (c) ProxyForwarder. All rights reserved.
+// </copyright>
+
 using Microsoft.EntityFrameworkCore;
 using ProxyForwarder.Core.Entities;
 

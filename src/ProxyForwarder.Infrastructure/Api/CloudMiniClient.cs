@@ -1,3 +1,7 @@
+// <copyright file="CloudMiniClient.cs" company="ProxyForwarder">
+// Copyright (c) ProxyForwarder. All rights reserved.
+// </copyright>
+
 using System.Net.Http;
 using System.Text.Json;
 using ProxyForwarder.Core.Abstractions;

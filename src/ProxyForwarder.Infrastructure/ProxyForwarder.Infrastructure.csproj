@@ -5,4 +5,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ProxyForwarder.Core\ProxyForwarder.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.7.0" />
+  </ItemGroup>
 </Project>

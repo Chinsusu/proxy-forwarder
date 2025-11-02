@@ -1,3 +1,7 @@
+// <copyright file="App.xaml.cs" company="ProxyForwarder">
+// Copyright (c) ProxyForwarder. All rights reserved.
+// </copyright>
+
 using System;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
@@ -21,16 +25,25 @@ public partial class App : Application
         HostInstance = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
             .ConfigureServices((ctx, services) =>
             {
+                services.AddSingleton<ISettingsProvider, SettingsProvider>();
+
                 services.AddDbContextFactory<ForwarderDbContext>(o =>
                     o.UseSqlite($"Data Source={System.IO.Path.Combine(AppContext.BaseDirectory, "forwarder.db")}"));
-                services.AddHttpClient<ICloudMiniClient, CloudMiniClient>(c =>
+
+                services.AddHttpClient<ICloudMiniClient, CloudMiniClient>((sp, c) =>
                 {
-                    c.BaseAddress = new Uri("https://client.cloudmini.net/api/v2/");
+                    var settings = sp.GetRequiredService<ISettingsProvider>().Current;
+                    c.BaseAddress = new Uri(settings.ApiBaseUrl);
                     c.Timeout = TimeSpan.FromSeconds(20);
                 });
+
                 services.AddSingleton<ISecureStorage, SecureStorage>();
                 services.AddSingleton<IForwarderService, ForwarderService>();
-                services.AddSingleton<PortAllocator>();
+                services.AddSingleton<PortAllocator>(sp =>
+                {
+                    var s = sp.GetRequiredService<ISettingsProvider>().Current;
+                    return new PortAllocator(s.PortRangeMin, s.PortRangeMax);
+                });
                 services.AddSingleton<IProxyRepository, ProxyRepository>();
 
                 services.AddSingleton<MainWindow>();

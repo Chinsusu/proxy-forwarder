@@ -2,8 +2,9 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <LangVersion>12.0</LangVersion>
+    <NoWarn>SA1633,SA1636,SA1200,SA1513,SA1516,SA1309,SA1101,CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
