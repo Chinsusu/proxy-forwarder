@@ -5,6 +5,7 @@
     <UseWPF>true</UseWPF>
     <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
     <NoWarn>SA1636</NoWarn>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProxyForwarder.Core\ProxyForwarder.Core.csproj" />
