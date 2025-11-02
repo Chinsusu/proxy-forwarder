@@ -13,4 +13,16 @@ public class ProxyParserTests
         Assert.Equal("user", rec.Username);
         Assert.Equal("pass", rec.Password);
     }
+
+    [Fact]
+    public void Parse_HostIdPortUserPass()
+    {
+        // Format: HOSTNAME:ID:PORT:USER:PASS
+        var ok = ProxyParser.TryParse("ipv4-vt-02.resvn.net:95:19609:lxaNzoF1:p5uVv9F6tnlW", out var rec);
+        Assert.True(ok);
+        Assert.Equal("ipv4-vt-02.resvn.net", rec.Host);
+        Assert.Equal(19609, rec.Port);
+        Assert.Equal("lxaNzoF1", rec.Username);
+        Assert.Equal("p5uVv9F6tnlW", rec.Password);
+    }
 }
