@@ -14,6 +14,7 @@ public partial class ProxiesViewModel : ObservableObject
     private readonly IIpWhoisClient _whois;
     private readonly INotificationService _notifications;
     private readonly SemaphoreSlim _sem = new(8); // measure up to 8 proxies in parallel
+    private Timer? _pingTimer;
 
     [ObservableProperty] private ObservableCollection<ProxyRecord> items = new();
 
@@ -29,8 +30,15 @@ public partial class ProxiesViewModel : ObservableObject
         RefreshCommand = new AsyncRelayCommand(RefreshAsync);
         PingCommand = new AsyncRelayCommand(PingAllAsync);
         
-        // Subscribe to proxies synced event
-        _notifications.ProxiesSynced += async (_, _) => await RefreshAsync();
+        // Subscribe to proxies synced event - auto-ping on import
+        _notifications.ProxiesSynced += async (_, _) =>
+        {
+            await RefreshAsync();
+            _ = PingAllAsync();
+        };
+        
+        // Start 10-minute ping timer
+        _pingTimer = new Timer(_ => _ = PingAllAsync(), null, TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(10));
         
         _ = RefreshAsync();
     }
@@ -58,6 +66,7 @@ public partial class ProxiesViewModel : ObservableObject
                 var whoisInfo = await _whois.GetIpInfoAsync(p.Host, p.Port, p.Username, p.Password, cts.Token);
                 if (whoisInfo is not null)
                 {
+                    p.ExitIp = whoisInfo.Ip;
                     p.ISP = whoisInfo.Isp ?? whoisInfo.Organization;
                     if (!string.IsNullOrWhiteSpace(whoisInfo.Country) || !string.IsNullOrWhiteSpace(whoisInfo.City))
                     {

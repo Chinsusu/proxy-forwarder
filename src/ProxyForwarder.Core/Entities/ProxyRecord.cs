@@ -19,6 +19,8 @@ public sealed class ProxyRecord : INotifyPropertyChanged
     private int? _ping; // Ping latency in milliseconds (notify so DataGrid refreshes)
     public int? Ping { get => _ping; set { _ping = value; OnPropertyChanged(); } }
     
+    public string? ExitIp { get; set; } // Exit IP from ipwho.is response
+    
     public DateTime ImportedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? ExpirationDate { get; set; } // When the proxy expires
     public bool Disabled { get; set; }
