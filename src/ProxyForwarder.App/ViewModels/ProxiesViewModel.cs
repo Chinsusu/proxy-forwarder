@@ -22,6 +22,8 @@ public partial class ProxiesViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<ProxyRecord> items = new();
     [ObservableProperty] private string filterText = "";
+    [ObservableProperty] private string? selectedType;
+    [ObservableProperty] private ObservableCollection<string> types = new();
     [ObservableProperty] private ObservableCollection<ProxyRecord> filteredItems = new();
 
     public IAsyncRelayCommand RefreshCommand { get; }
@@ -41,6 +43,10 @@ public partial class ProxiesViewModel : ObservableObject
         
         // Start 10-minute ping timer
         _pingTimer = new Timer(_ => _ = PingAllAsync(), null, TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(10));
+        
+        // Initialize Types with "All" option
+        Types = new ObservableCollection<string> { "All" };
+        SelectedType = "All";
     }
 
     private async Task RefreshAsync()
@@ -48,6 +54,7 @@ public partial class ProxiesViewModel : ObservableObject
         // Load proxies from in-memory storage (NotificationService)
         var all = _notifications.GetProxies();
         Items = new ObservableCollection<ProxyRecord>(all);
+        UpdateTypes();
         ApplyFilter();
         // Auto-populate ISP after refresh
         await PopulateIspAsync();
@@ -58,24 +65,53 @@ public partial class ProxiesViewModel : ObservableObject
         ApplyFilter();
     }
     
+    partial void OnSelectedTypeChanged(string? value)
+    {
+        ApplyFilter();
+    }
+    
     private void ApplyFilter()
     {
-        if (string.IsNullOrWhiteSpace(FilterText))
+        var query = Items.AsEnumerable();
+        
+        // Filter by Type if not "All"
+        if (!string.IsNullOrWhiteSpace(SelectedType) && SelectedType != "All")
         {
-            FilteredItems = new ObservableCollection<ProxyRecord>(Items);
+            query = query.Where(p => p.Type == SelectedType);
         }
-        else
+        
+        // Filter by search text
+        if (!string.IsNullOrWhiteSpace(FilterText))
         {
             var filter = FilterText.ToLower();
-            var filtered = Items.Where(p => 
+            query = query.Where(p => 
                 p.Host.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
                 p.Port.ToString().Contains(filter) ||
                 (p.ISP?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) ||
                 (p.City?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) ||
                 (p.Country?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) ||
                 (p.ExitIp?.Contains(filter) ?? false)
-            ).ToList();
-            FilteredItems = new ObservableCollection<ProxyRecord>(filtered);
+            );
+        }
+        
+        FilteredItems = new ObservableCollection<ProxyRecord>(query.ToList());
+    }
+    
+    private void UpdateTypes()
+    {
+        var uniqueTypes = Items.Select(p => p.Type).Where(t => !string.IsNullOrWhiteSpace(t)).Distinct().OrderBy(t => t).ToList();
+        
+        Types.Clear();
+        Types.Add("All");
+        foreach (var type in uniqueTypes)
+        {
+            Types.Add(type!);
+        }
+        
+        // Reset filter if selected type no longer exists
+        if (!string.IsNullOrWhiteSpace(SelectedType) && SelectedType != "All" && !uniqueTypes.Contains(SelectedType))
+        {
+            SelectedType = "All";
         }
     }
 

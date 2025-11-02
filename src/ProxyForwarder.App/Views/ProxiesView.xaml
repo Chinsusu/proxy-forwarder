@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel Margin="10">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,6">
-            <TextBlock Text="Filter:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource Brush.Text}"/>
-            <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Width="300" Padding="8,4" Background="{StaticResource Brush.Surface}" Foreground="{StaticResource Brush.Text}" BorderThickness="1" BorderBrush="{StaticResource Brush.Border}"/>
+            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource Brush.Text}"/>
+            <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Width="250" Padding="8,4" Background="{StaticResource Brush.Surface}" Foreground="{StaticResource Brush.Text}" BorderThickness="1" BorderBrush="{StaticResource Brush.Border}" Margin="0,0,20,0"/>
+            <TextBlock Text="Type:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource Brush.Text}"/>
+            <ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType, UpdateSourceTrigger=PropertyChanged}" Width="150" Padding="8,4" Background="{StaticResource Brush.Surface}" Foreground="{StaticResource Brush.Text}" BorderThickness="1" BorderBrush="{StaticResource Brush.Border}"/>
         </StackPanel>
         <DataGrid ItemsSource="{Binding FilteredItems}" AutoGenerateColumns="False" HeadersVisibility="Column"
                   CanUserAddRows="False" Background="{StaticResource Brush.Surface}" 
