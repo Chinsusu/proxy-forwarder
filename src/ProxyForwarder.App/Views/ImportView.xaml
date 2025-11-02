@@ -1,0 +1,24 @@
+<UserControl x:Class="ProxyForwarder.App.Views.ImportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:ProxyForwarder.App.ViewModels"
+             mc:Ignorable="d">
+    <UserControl.DataContext>
+        <vm:ImportViewModel />
+    </UserControl.DataContext>
+    <Grid Margin="24" ColumnDefinitions="* auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Text="CloudMini API Token" FontWeight="SemiBold"/>
+        <PasswordBox Grid.Row="1" x:Name="TokenBox" PasswordChar="•" PasswordChanged="PasswordBox_PasswordChanged"/>
+        <TextBlock Grid.Row="2" Text="Chọn Region" Margin="0,16,0,4"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" >
+            <ComboBox Width="400" ItemsSource="{Binding Regions}" SelectedItem="{Binding SelectedRegion}" DisplayMemberPath="Name"/>
+            <Button Margin="8,0,0,0" Content="Load Regions" Command="{Binding LoadRegionsCommand}"/>
+        </StackPanel>
+        <TextBlock Grid.Row="4" Text="Số lượng proxy" Margin="0,16,0,4"/>
+        <TextBox Grid.Row="5" Width="120" Text="{Binding Quantity}"/>
+        <Button Grid.Row="6" Grid.ColumnSpan="2" Height="48" Margin="0,20,0,0"
+                Content="Nhập Proxy Vào Danh Sách" Command="{Binding ImportCommand}"/>
+    </Grid>
+</UserControl>
