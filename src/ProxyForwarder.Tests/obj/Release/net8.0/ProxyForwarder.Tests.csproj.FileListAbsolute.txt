@@ -1,6 +1,6 @@
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\.msCoverageSourceRootsMapping_ProxyForwarder.Tests
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\testhost.exe
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\testhost.dll
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\testhost.exe
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\xunit.runner.visualstudio.testadapter.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\xunit.runner.utility.netcoreapp10.dll

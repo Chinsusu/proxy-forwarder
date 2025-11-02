@@ -175,12 +175,12 @@ public sealed class CloudMiniClient : ICloudMiniClient
         return result;
     }
 
-    public async Task<IReadOnlyList<(string ProxyString, int Price)>> GetAllProxiesWithMetadataAsync(string token, string type, int maxCount, CancellationToken ct)
+    public async Task<IReadOnlyList<(string ProxyString, int Price, string? Location)>> GetAllProxiesWithMetadataAsync(string token, string type, int maxCount, CancellationToken ct)
     {
         var s = _settings.Current;
         int page = 1, imported = 0;
         int limit = Math.Max(1, s.AllProxiesPageSize);
-        var result = new List<(string, int)>(capacity: Math.Max(limit, maxCount));
+        var result = new List<(string, int, string?)>(capacity: Math.Max(limit, maxCount));
 
         string F(int p, int off) =>
             s.AllProxiesPath.Replace("{page}", p.ToString())
@@ -209,9 +209,9 @@ public sealed class CloudMiniClient : ICloudMiniClient
             var payload = await res.Content.ReadAsStringAsync(ct);
             var pageItems = ParseProxiesWithMetadata(payload);
             if (pageItems.Count == 0) break;
-            foreach (var (proxyStr, price) in pageItems)
+            foreach (var (proxyStr, price, location) in pageItems)
             {
-                result.Add((proxyStr, price));
+                result.Add((proxyStr, price, location));
                 imported++;
                 if (imported >= maxCount) break;
             }
@@ -222,25 +222,35 @@ public sealed class CloudMiniClient : ICloudMiniClient
         return result;
     }
 
-    private static List<(string ProxyString, int Price)> ParseProxiesWithMetadata(string payload)
+    private static List<(string ProxyString, int Price, string? Location)> ParseProxiesWithMetadata(string payload)
     {
-        var list = new List<(string, int)>();
+        var list = new List<(string, int, string?)>();
         
         if (!payload.TrimStart().StartsWith("[") && !payload.TrimStart().StartsWith("{"))
         {
-            // Plain text format - no price info available
+            // Plain text format - no metadata available
             return payload.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(s => s.Trim()).Where(s => !string.IsNullOrWhiteSpace(s))
-                          .Select(s => (s, 0)).ToList();
+                          .Select(s => (s, 0, (string?)null)).ToList();
         }
         
         using var doc = JsonDocument.Parse(payload);
         
-        string JoinObj(JsonElement o, out int price)
+        string JoinObj(JsonElement o, out int price, out string? location)
         {
             price = 0;
+            location = null;
             if (o.TryGetProperty("price", out var p) && p.TryGetInt32(out var priceVal))
                 price = priceVal;
+            if (o.TryGetProperty("location", out var l))
+                location = l.GetString();
+            else if (o.TryGetProperty("region", out l))
+                location = l.GetString();
+            else if (o.TryGetProperty("country", out l))
+                location = l.GetString();
+            else if (o.TryGetProperty("area", out l))
+                location = l.GetString();
+            
             
             string host = o.TryGetProperty("host", out var h) ? h.GetString() ?? "" :
                           o.TryGetProperty("ip", out h) ? h.GetString() ?? "" :
@@ -283,12 +293,12 @@ public sealed class CloudMiniClient : ICloudMiniClient
                 if (el.ValueKind == JsonValueKind.String)
                 {
                     var s = el.GetString();
-                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0));
+                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0, null));
                 }
                 else
                 {
-                    var proxy = JoinObj(el, out var price);
-                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price));
+                    var proxy = JoinObj(el, out var price, out var location);
+                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price, location));
                 }
             }
             return list;
@@ -317,12 +327,12 @@ public sealed class CloudMiniClient : ICloudMiniClient
                 if (el.ValueKind == JsonValueKind.String)
                 {
                     var s = el.GetString();
-                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0));
+                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0, null));
                 }
                 else
                 {
-                    var proxy = JoinObj(el, out var price);
-                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price));
+                    var proxy = JoinObj(el, out var price, out var location);
+                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price, location));
                 }
             }
         }

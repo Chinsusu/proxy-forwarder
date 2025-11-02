@@ -10,7 +10,7 @@ public sealed class ProxyRecord
     public string? Username { get; set; }
     public string? Password { get; set; }
     public string Provider { get; set; } = "CloudMini";
-    public string? RegionCode { get; set; }
+    public string? Location { get; set; } // Location/Region from proxy provider
     public string? Type { get; set; } // PrivateV4, PrivateV6, Residential, ResidentialStatic, BudgetV4, etc.
     public DateTime ImportedAtUtc { get; set; } = DateTime.UtcNow;
     public bool Disabled { get; set; }
