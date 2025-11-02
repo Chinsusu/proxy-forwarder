@@ -14,25 +14,26 @@ namespace ProxyForwarder.Infrastructure.Services;
 /// </summary>
 public sealed class IpWhoisClient : IIpWhoisClient
 {
-    private static readonly HttpClientHandler _handler = new();
-
     public async Task<IpWhoisInfo?> GetIpInfoAsync(string proxyHost, int proxyPort, string? user, string? pass, CancellationToken ct = default)
     {
-        using var http = new HttpClient(_handler, false);
-        http.Timeout = TimeSpan.FromSeconds(8);
-
         try
         {
-            // Setup proxy with auth
-            var proxy = new System.Net.WebProxy($"http://{proxyHost}:{proxyPort}")
+            // Create new handler+client for each call to avoid proxy state issues
+            var handler = new HttpClientHandler()
             {
-                UseDefaultCredentials = false,
-                Credentials = string.IsNullOrWhiteSpace(user)
-                    ? null
-                    : new System.Net.NetworkCredential(user, pass)
+                Proxy = new System.Net.WebProxy($"http://{proxyHost}:{proxyPort}")
+                {
+                    UseDefaultCredentials = false,
+                    Credentials = string.IsNullOrWhiteSpace(user)
+                        ? null
+                        : new System.Net.NetworkCredential(user, pass)
+                },
+                UseProxy = true
             };
-            _handler.Proxy = proxy;
-
+            
+            using var http = new HttpClient(handler, true);
+            http.Timeout = TimeSpan.FromSeconds(8);
+            
             var res = await http.GetAsync("https://ipwho.is", HttpCompletionOption.ResponseContentRead, ct);
             if (!res.IsSuccessStatusCode) return null;
 
