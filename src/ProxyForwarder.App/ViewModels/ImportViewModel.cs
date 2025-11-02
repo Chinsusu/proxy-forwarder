@@ -23,6 +23,7 @@ public partial class ImportViewModel : ObservableObject
 
     [ObservableProperty] private string token = string.Empty;
     [ObservableProperty] private string typeFilter = "proxy";
+    [ObservableProperty] private string syncMessage = string.Empty;
 
     public IAsyncRelayCommand SyncAllCommand { get; }
 
@@ -66,13 +67,17 @@ public partial class ImportViewModel : ObservableObject
                 }
             }
             await _repo.UpsertProxiesAsync(records);
-            System.Windows.MessageBox.Show($"Đã sync {records.Count} proxy.");
+            SyncMessage = $"✓ Đã sync {records.Count} proxy.";
             // Notify other ViewModels to refresh
             _notifications.NotifyProxiesSynced();
         }
         catch (HttpRequestException ex)
         {
-            System.Windows.MessageBox.Show(ex.Message, "Sync ALL failed");
+            SyncMessage = $"✗ Sync failed: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            SyncMessage = $"✗ Error: {ex.Message}";
         }
     }
 }
