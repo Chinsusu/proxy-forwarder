@@ -17,49 +17,51 @@ public sealed class ForwarderService : IForwarderService
 {
     private readonly ConcurrentDictionary<Guid, (ProxyServer server, ExplicitProxyEndPoint ep)> _map = new();
 
-    public Task<int> StartAsync(ProxyRecord proxy, int localPort, CancellationToken ct)
+    public async Task<int> StartAsync(ProxyRecord proxy, int localPort, CancellationToken ct)
     {
-        if (_map.ContainsKey(proxy.Id)) return Task.FromResult(localPort);
+        if (_map.ContainsKey(proxy.Id)) return localPort;
 
-        var server = new ProxyServer();
-        var upstream = new ExternalProxy
+        return await Task.Run(() =>
         {
-            HostName = proxy.Host,
-            Port = proxy.Port,
-            UserName = proxy.Username,
-            Password = proxy.Password
-        };
-        server.UpStreamHttpProxy = upstream;
-        server.UpStreamHttpsProxy = upstream;
+            try
+            {
+                var server = new ProxyServer();
+                var upstream = new ExternalProxy
+                {
+                    HostName = proxy.Host,
+                    Port = proxy.Port,
+                    UserName = proxy.Username,
+                    Password = proxy.Password
+                };
+                server.UpStreamHttpProxy = upstream;
+                server.UpStreamHttpsProxy = upstream;
 
-        // Tạo endpoint cục bộ KHÔNG giải mã SSL (chỉ tunnel CONNECT)
-        var ep = new ExplicitProxyEndPoint(IPAddress.Loopback, localPort, decryptSsl: false);
-        server.AddEndPoint(ep);
-        
-        // Suppress certificate management completely to avoid any popups
-        try
-        {
-            // Disable certificate checking
-            server.CertificateManager.RemoveTrustedRootCertificate(true);
-        }
-        catch { /* Ignore */ }
-        
-        // Suppress all exceptions including certificate-related ones
-        server.ExceptionFunc = ex => {
-            // Silent fail - don't show popups or write to console
-            if (ex != null) Debug.WriteLine($"[Proxy] {ex.Message}");
-        };
-        try
-        {
-            server.Start();
-        }
-        catch (Exception ex)
-        {
-            // Catch any SSL/certificate exceptions and suppress them
-            Debug.WriteLine($"ForwarderService.Start error: {ex.Message}");
-        }
-        _map[proxy.Id] = (server, ep);
-        return Task.FromResult(ep.Port);
+                // Tạo endpoint cục bộ KHÔNG giải mã SSL (chỉ tunnel CONNECT)
+                var ep = new ExplicitProxyEndPoint(IPAddress.Loopback, localPort, decryptSsl: false);
+                server.AddEndPoint(ep);
+                
+                // Suppress certificate management completely to avoid any popups
+                try
+                {
+                    server.CertificateManager.RemoveTrustedRootCertificate(true);
+                }
+                catch { /* Ignore */ }
+                
+                // Suppress all exceptions
+                server.ExceptionFunc = ex => {
+                    if (ex != null) Debug.WriteLine($"[Proxy] {ex.Message}");
+                };
+                
+                server.Start();
+                _map[proxy.Id] = (server, ep);
+                return ep.Port;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"ForwarderService.Start error: {ex.Message}");
+                return localPort;
+            }
+        }, ct);
     }
 
     public Task StopAsync(Guid proxyId)
