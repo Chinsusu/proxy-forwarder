@@ -255,18 +255,18 @@ public sealed class CloudMiniClient : ICloudMiniClient
             // Extract expiration date
             if (o.TryGetProperty("expired_at", out var exp) && exp.ValueKind == JsonValueKind.String)
             {
-                if (DateTime.TryParse(exp.GetString(), out var expDate))
-                    expirationDate = expDate;
+                if (DateTime.TryParse(exp.GetString(), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out var expDate))
+                    expirationDate = expDate.Kind == DateTimeKind.Utc ? expDate.ToLocalTime() : expDate;
             }
             else if (o.TryGetProperty("expiration_date", out exp) && exp.ValueKind == JsonValueKind.String)
             {
-                if (DateTime.TryParse(exp.GetString(), out var expDate))
-                    expirationDate = expDate;
+                if (DateTime.TryParse(exp.GetString(), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out var expDate))
+                    expirationDate = expDate.Kind == DateTimeKind.Utc ? expDate.ToLocalTime() : expDate;
             }
             else if (o.TryGetProperty("expire_date", out exp) && exp.ValueKind == JsonValueKind.String)
             {
-                if (DateTime.TryParse(exp.GetString(), out var expDate))
-                    expirationDate = expDate;
+                if (DateTime.TryParse(exp.GetString(), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out var expDate))
+                    expirationDate = expDate.Kind == DateTimeKind.Utc ? expDate.ToLocalTime() : expDate;
             }
             
             string host = o.TryGetProperty("host", out var h) ? h.GetString() ?? "" :

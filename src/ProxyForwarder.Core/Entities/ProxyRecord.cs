@@ -16,6 +16,17 @@ public sealed class ProxyRecord
     public DateTime? ExpirationDate { get; set; } // When the proxy expires
     public bool Disabled { get; set; }
     
+    /// <summary>Get remaining days until expiration</summary>
+    public int? DaysRemaining
+    {
+        get
+        {
+            if (!ExpirationDate.HasValue) return null;
+            var remaining = ExpirationDate.Value - DateTime.Now;
+            return remaining.TotalSeconds < 0 ? 0 : (int)Math.Ceiling(remaining.TotalDays);
+        }
+    }
+    
     /// <summary>Get remaining time until expiration (formatted as: 1d 2h 5')</summary>
     public string? GetRemainingTime()
     {
