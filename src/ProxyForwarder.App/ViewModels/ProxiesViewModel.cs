@@ -10,6 +10,7 @@ namespace ProxyForwarder.App.ViewModels;
 public partial class ProxiesViewModel : ObservableObject
 {
     private readonly IProxyRepository _repo;
+    private readonly INotificationService _notifications;
 
     [ObservableProperty] private ObservableCollection<ProxyRecord> items = new();
 
@@ -18,7 +19,12 @@ public partial class ProxiesViewModel : ObservableObject
     public ProxiesViewModel()
     {
         _repo = (IProxyRepository)App.HostInstance!.Services.GetRequiredService(typeof(IProxyRepository));
+        _notifications = (INotificationService)App.HostInstance!.Services.GetRequiredService(typeof(INotificationService));
         RefreshCommand = new AsyncRelayCommand(RefreshAsync);
+        
+        // Subscribe to proxies synced event
+        _notifications.ProxiesSynced += async (_, _) => await RefreshAsync();
+        
         _ = RefreshAsync();
     }
 

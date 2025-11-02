@@ -7,5 +7,10 @@
         <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAllProxiesByTypeAsync(System.String,System.String,System.Int32,System.Threading.CancellationToken)">
             <summary>Sync all proxies by type (e.g. "proxy") with paging until maxCount or exhausted.</summary>
         </member>
+        <member name="T:ProxyForwarder.Core.Abstractions.INotificationService">
+            <summary>
+            Simple event-based notification service for ViewModels to communicate
+            </summary>
+        </member>
     </members>
 </doc>

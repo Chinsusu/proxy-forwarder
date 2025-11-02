@@ -19,6 +19,7 @@ public partial class ImportViewModel : ObservableObject
     private readonly ICloudMiniClient _client;
     private readonly IProxyRepository _repo;
     private readonly ISecureStorage _secure;
+    private readonly INotificationService _notifications;
 
     [ObservableProperty] private ObservableCollection<Region> regions = new();
     [ObservableProperty] private Region? selectedRegion;
@@ -36,6 +37,7 @@ public partial class ImportViewModel : ObservableObject
         _client = (ICloudMiniClient)App.HostInstance!.Services.GetRequiredService(typeof(ICloudMiniClient));
         _repo   = (IProxyRepository)App.HostInstance!.Services.GetRequiredService(typeof(IProxyRepository));
         _secure = (ISecureStorage)App.HostInstance!.Services.GetRequiredService(typeof(ISecureStorage));
+        _notifications = (INotificationService)App.HostInstance!.Services.GetRequiredService(typeof(INotificationService));
 
         LoadRegionsCommand = new AsyncRelayCommand(LoadRegionsAsync);
         ImportCommand = new AsyncRelayCommand(ImportAsync, CanImport);
@@ -94,6 +96,8 @@ public partial class ImportViewModel : ObservableObject
             }
             await _repo.UpsertProxiesAsync(records);
             System.Windows.MessageBox.Show($"Đã sync {records.Count} proxy.");
+            // Notify other ViewModels to refresh
+            _notifications.NotifyProxiesSynced();
         }
         catch (HttpRequestException ex)
         {

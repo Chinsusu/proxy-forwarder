@@ -52,6 +52,7 @@ public partial class App : Application
 
                 services.AddSingleton<ISecureStorage, SecureStorage>();
                 services.AddSingleton<IForwarderService, ForwarderService>();
+                services.AddSingleton<INotificationService, ProxyForwarder.Core.Abstractions.NotificationService>();
                 services.AddSingleton<PortAllocator>(sp =>
                 {
                     var s = sp.GetRequiredService<ISettingsProvider>().Current;
