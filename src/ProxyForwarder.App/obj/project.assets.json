@@ -8071,6 +8071,7 @@
       "Microsoft.EntityFrameworkCore.Sqlite >= 8.0.6",
       "Microsoft.Extensions.Hosting >= 8.0.0",
       "Microsoft.Extensions.Http >= 8.0.0",
+      "Microsoft.Extensions.Logging.Debug >= 8.0.0",
       "Polly >= 8.4.0",
       "ProxyForwarder.Core >= 1.0.0",
       "ProxyForwarder.Forwarding >= 1.0.0",
@@ -8152,6 +8153,10 @@
             "version": "[8.0.0, )"
           },
           "Microsoft.Extensions.Http": {
+            "target": "Package",
+            "version": "[8.0.0, )"
+          },
+          "Microsoft.Extensions.Logging.Debug": {
             "target": "Package",
             "version": "[8.0.0, )"
           },
