@@ -1,8 +1,10 @@
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace ProxyForwarder.Core.Entities;
 
-public sealed class ProxyRecord
+public sealed class ProxyRecord : INotifyPropertyChanged
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Host { get; set; } = string.Empty;
@@ -13,7 +15,10 @@ public sealed class ProxyRecord
     public string? Location { get; set; } // Location/Region from proxy provider
     public string? Type { get; set; } // PrivateV4, PrivateV6, Residential, ResidentialStatic, BudgetV4, etc.
     public string? ISP { get; set; } // Internet Service Provider
-    public int? Ping { get; set; } // Ping latency in milliseconds
+    
+    private int? _ping; // Ping latency in milliseconds (notify so DataGrid refreshes)
+    public int? Ping { get => _ping; set { _ping = value; OnPropertyChanged(); } }
+    
     public DateTime ImportedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? ExpirationDate { get; set; } // When the proxy expires
     public bool Disabled { get; set; }
@@ -49,4 +54,8 @@ public sealed class ProxyRecord
         
         return $"{remaining.Minutes}'";
     }
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private void OnPropertyChanged([CallerMemberName] string? name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

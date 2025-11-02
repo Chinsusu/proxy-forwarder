@@ -443,4 +443,64 @@ public sealed class CloudMiniClient : ICloudMiniClient
         }
         return list;
     }
+
+    /// <summary>
+    /// Get account proxies from /proxy endpoint with full details (ISP, Location, ExpireDate).
+    /// </summary>
+    public async Task<IReadOnlyList<ProxyRecord>> GetAccountProxiesAsync(string token, int page, int limit, CancellationToken ct)
+    {
+        var path = $"proxy?page={page}&limit={limit}";
+        using var res = await TryGetAsync(new[] { path, "proxy" }, token, ct);
+        res.EnsureSuccessStatusCode();
+        var json = await res.Content.ReadAsStringAsync(ct);
+        using var doc = JsonDocument.Parse(json);
+        var list = new List<ProxyRecord>();
+        
+        if (!doc.RootElement.TryGetProperty("data", out var data) || data.ValueKind != JsonValueKind.Array)
+            return list;
+        
+        foreach (var e in data.EnumerateArray())
+        {
+            string ip = e.TryGetProperty("ip", out var v) ? v.GetString() ?? "" : "";
+            int port = 0;
+            if (e.TryGetProperty("https", out var hp) && int.TryParse(hp.GetString() ?? hp.ToString(), out var p1)) port = p1;
+            else if (e.TryGetProperty("socks", out var sp) && int.TryParse(sp.GetString() ?? sp.ToString(), out var p2)) port = p2;
+
+            var rec = new ProxyRecord
+            {
+                Host = ip,
+                Port = port,
+                Username = e.TryGetProperty("user", out var u) ? u.GetString() : null,
+                Password = e.TryGetProperty("password", out var pw) ? pw.GetString() : null,
+                ISP = e.TryGetProperty("isp", out var isp) ? isp.GetString() : null,
+                Location = e.TryGetProperty("location", out var loc) ? CleanLocation(loc.GetString()) : null,
+                Type = e.TryGetProperty("type", out var t) ? t.GetString() : null,
+                ExpirationDate = BuildExpirationDate(e)
+            };
+            
+            // Fallback ISP if API doesn't have isp field: take part after " - " in location
+            if (string.IsNullOrWhiteSpace(rec.ISP) && !string.IsNullOrWhiteSpace(rec.Location))
+            {
+                var parts = rec.Location!.Split(" - ");
+                if (parts.Length >= 2) rec.ISP = parts[^1].Trim();
+            }
+            
+            list.Add(rec);
+        }
+        
+        return list;
+
+        static string? CleanLocation(string? s)
+            => string.IsNullOrWhiteSpace(s) ? s : s.Replace("Expired", "", StringComparison.OrdinalIgnoreCase).Trim().TrimEnd('-', ' ');
+
+        static DateTime? BuildExpirationDate(JsonElement e)
+        {
+            if (e.TryGetProperty("expired_at", out var ex) && ex.ValueKind == JsonValueKind.String)
+            {
+                if (DateTime.TryParse(ex.GetString(), out var dt))
+                    return dt;
+            }
+            return null;
+        }
+    }
 }

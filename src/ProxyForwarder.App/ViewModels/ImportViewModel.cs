@@ -44,31 +44,30 @@ public partial class ImportViewModel : ObservableObject
         {
             var tk = Token;
             await _secure.SaveTokenAsync(tk);
-            if (string.IsNullOrWhiteSpace(TypeFilter))
-            {
-                System.Windows.MessageBox.Show("Nhập type filter, ví dụ: proxy");
-                return;
-            }
             var settings = (ISettingsProvider)App.HostInstance!.Services.GetRequiredService(typeof(ISettingsProvider));
-            var rawsWithMetadata = await _client.GetAllProxiesWithMetadataAsync(tk, TypeFilter.Trim(), settings.Current.MaxProxiesPerSync, CancellationToken.None);
-            // Clear all existing proxies before importing new ones
-            await _repo.ClearAllAsync();
+            var pageSize = 500;
+            var maxCount = settings.Current.MaxProxiesPerSync;
+            var taken = 0;
+            var all = new List<ProxyRecord>();
             
-            var records = new List<ProxyRecord>();
-            foreach (var (proxyStr, price, location, expirationDate, isp) in rawsWithMetadata)
+            // Get details from /proxy endpoint to have ISP/Location/ExpireDate
+            for (int page = 1; taken < maxCount; page++)
             {
-                if (ProxyParser.TryParse(proxyStr, out var r))
+                var batch = await _client.GetAccountProxiesAsync(tk, page, pageSize, CancellationToken.None);
+                if (batch.Count == 0) break;
+                
+                foreach (var r in batch)
                 {
-                    // Classify proxy type based on price
-                    r.Type = ProxyTypeClassifier.ClassifyByPrice(price);
-                    r.Location = location;
-                    r.ExpirationDate = expirationDate;
-                    r.ISP = isp;
-                    records.Add(r);
+                    all.Add(r);
+                    taken++;
+                    if (taken >= maxCount) break;
                 }
             }
-            await _repo.UpsertProxiesAsync(records);
-            SyncMessage = $"✓ Đã sync {records.Count} proxy.";
+            
+            // Clear all existing proxies before importing new ones
+            await _repo.ClearAllAsync();
+            await _repo.UpsertProxiesAsync(all);
+            SyncMessage = $"✓ Đã sync {all.Count} proxy.";
             // Notify other ViewModels to refresh
             _notifications.NotifyProxiesSynced();
         }

@@ -10,6 +10,9 @@
         <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAllProxiesWithMetadataAsync(System.String,System.String,System.Int32,System.Threading.CancellationToken)">
             <summary>Sync all proxies with metadata (proxy string + price + location + expiration + ISP) by type.</summary>
         </member>
+        <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAccountProxiesAsync(System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Get account proxies from /proxy endpoint with full details (ISP, Location, ExpireDate).</summary>
+        </member>
         <member name="T:ProxyForwarder.Core.Abstractions.INotificationService">
             <summary>
             Simple event-based notification service for ViewModels to communicate

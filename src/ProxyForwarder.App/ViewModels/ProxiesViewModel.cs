@@ -50,7 +50,15 @@ public partial class ProxiesViewModel : ObservableObject
             {
                 var ms = await _probe.ProbeAsync(p.Host, p.Port, p.Username, p.Password, 8000, cts.Token);
                 p.Ping = ms is null ? null : (int?)ms.Value;
-                OnPropertyChanged(nameof(Items)); // update DataGrid quickly
+                // Force DataGrid refresh (replace item in collection to trigger CollectionChanged)
+                var idx = Items.IndexOf(p);
+                if (idx >= 0)
+                {
+                    await App.Current!.Dispatcher.InvokeAsync(() =>
+                    {
+                        Items[idx] = Items[idx]; // raises CollectionChanged
+                    });
+                }
             }
             catch { /* ignore per-item errors */ }
             finally { _sem.Release(); }
