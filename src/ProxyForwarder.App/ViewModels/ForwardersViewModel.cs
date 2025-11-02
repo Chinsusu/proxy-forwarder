@@ -17,10 +17,8 @@ public partial class ForwardersViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<ForwarderRow> rows = new();
 
-    public IAsyncRelayCommand StartAllCommand { get; }
-    public IAsyncRelayCommand StopAllCommand { get; }
-    public IAsyncRelayCommand<ForwarderRow> StartOneCommand { get; }
-    public IAsyncRelayCommand<ForwarderRow> StopOneCommand { get; }
+    public IAsyncRelayCommand ToggleAllCommand { get; }
+    public IAsyncRelayCommand<ForwarderRow> ToggleOneCommand { get; }
 
     public ForwardersViewModel()
     {
@@ -30,10 +28,8 @@ public partial class ForwardersViewModel : ObservableObject
         _ports = (PortAllocator)sp.GetRequiredService(typeof(PortAllocator));
         _notifications = (INotificationService)sp.GetRequiredService(typeof(INotificationService));
 
-        StartAllCommand = new AsyncRelayCommand(StartAllAsync);
-        StopAllCommand = new AsyncRelayCommand(StopAllAsync);
-        StartOneCommand = new AsyncRelayCommand<ForwarderRow>(StartOneAsync);
-        StopOneCommand = new AsyncRelayCommand<ForwarderRow>(StopOneAsync);
+        ToggleAllCommand = new AsyncRelayCommand(ToggleAllAsync);
+        ToggleOneCommand = new AsyncRelayCommand<ForwarderRow>(ToggleOneAsync);
 
         // Subscribe to proxies synced event to reload forwarders
         _notifications.ProxiesSynced += async (_, _) => await LoadAsync();
@@ -47,28 +43,23 @@ public partial class ForwardersViewModel : ObservableObject
         Rows = new ObservableCollection<ForwarderRow>(all.Select(p => new ForwarderRow(p)));
     }
 
-    private async Task StartAllAsync()
+    private async Task ToggleAllAsync()
     {
-        foreach (var r in Rows) await StartOneAsync(r);
+        foreach (var r in Rows) await ToggleOneAsync(r);
     }
 
-    private async Task StopAllAsync()
-    {
-        foreach (var r in Rows) await StopOneAsync(r);
-    }
-
-    private Task StartOneAsync(ForwarderRow? row)
+    private Task ToggleOneAsync(ForwarderRow? row)
     {
         if (row is null) return Task.CompletedTask;
-        if (row.LocalPort == 0) row.LocalPort = _ports.Next();
-        return _forwarder.StartAsync(row.Proxy, row.LocalPort, CancellationToken.None)
-            .ContinueWith(_ => row.Status = "Running");
-    }
-
-    private Task StopOneAsync(ForwarderRow? row)
-    {
-        if (row is null) return Task.CompletedTask;
-        return _forwarder.StopAsync(row.Proxy.Id).ContinueWith(_ => row.Status = "Stopped");
+        if (row.Status == "Running")
+            return _forwarder.StopAsync(row.Proxy.Id).ContinueWith(_ => row.Status = "Stopped");
+        else
+        {
+            if (row.LocalPort == 0) row.LocalPort = _ports.Next();
+            row.Status = "Starting...";
+            return _forwarder.StartAsync(row.Proxy, row.LocalPort, CancellationToken.None)
+                .ContinueWith(_ => row.Status = "Running");
+        }
     }
 }
 

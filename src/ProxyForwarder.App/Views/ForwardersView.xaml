@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel Margin="10">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,6">
-            <Button Content="Start All" Command="{Binding StartAllCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" Height="36"/>
-            <Button Content="Stop All" Command="{Binding StopAllCommand}" Style="{StaticResource PrimaryButton}" Height="36"/>
+            <Button Content="Start/Stop All" Command="{Binding ToggleAllCommand}" Style="{StaticResource PrimaryButton}" Height="36"/>
         </StackPanel>
         <DataGrid ItemsSource="{Binding Rows}" AutoGenerateColumns="False" CanUserAddRows="False"
                   Background="{StaticResource Brush.Surface}" Foreground="{StaticResource Brush.Text}" 
@@ -16,10 +15,7 @@
                 <DataGridTemplateColumn Header="Actions" Width="160">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="Start" Command="{Binding DataContext.StartOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="0,0,8,0"/>
-                                <Button Content="Stop" Command="{Binding DataContext.StopOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                            </StackPanel>
+                            <Button Content="{Binding Status}" Command="{Binding DataContext.ToggleOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
