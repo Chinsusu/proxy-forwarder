@@ -1,0 +1,17 @@
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\bin\Debug\net8.0\ProxyForwarder.Core.deps.json
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\bin\Debug\net8.0\ProxyForwarder.Core.runtimeconfig.json
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\bin\Debug\net8.0\ProxyForwarder.Core.dll
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\bin\Debug\net8.0\ProxyForwarder.Core.pdb
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\bin\Debug\net8.0\ProxyForwarder.Core.xml
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.csproj.AssemblyReference.cache
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.AssemblyInfoInputs.cache
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.AssemblyInfo.cs
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.sourcelink.json
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.dll
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\refint\ProxyForwarder.Core.dll
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.xml
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.pdb
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ProxyForwarder.Core.genruntimeconfig.cache
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Core\obj\Debug\net8.0\ref\ProxyForwarder.Core.dll

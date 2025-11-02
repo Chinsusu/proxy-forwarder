@@ -55,7 +55,7 @@ public partial class ImportViewModel : ObservableObject
             await _repo.ClearAllAsync();
             
             var records = new List<ProxyRecord>();
-            foreach (var (proxyStr, price, location, expirationDate) in rawsWithMetadata)
+            foreach (var (proxyStr, price, location, expirationDate, isp) in rawsWithMetadata)
             {
                 if (ProxyParser.TryParse(proxyStr, out var r))
                 {
@@ -63,6 +63,7 @@ public partial class ImportViewModel : ObservableObject
                     r.Type = ProxyTypeClassifier.ClassifyByPrice(price);
                     r.Location = location;
                     r.ExpirationDate = expirationDate;
+                    r.ISP = isp;
                     records.Add(r);
                 }
             }

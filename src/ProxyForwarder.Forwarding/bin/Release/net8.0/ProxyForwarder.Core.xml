@@ -8,7 +8,7 @@
             <summary>Sync all proxies by type (e.g. "proxy") with paging until maxCount or exhausted.</summary>
         </member>
         <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAllProxiesWithMetadataAsync(System.String,System.String,System.Int32,System.Threading.CancellationToken)">
-            <summary>Sync all proxies with metadata (proxy string + price + location + expiration) by type.</summary>
+            <summary>Sync all proxies with metadata (proxy string + price + location + expiration + ISP) by type.</summary>
         </member>
         <member name="T:ProxyForwarder.Core.Abstractions.INotificationService">
             <summary>
