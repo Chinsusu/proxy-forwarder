@@ -59,6 +59,7 @@ public partial class App : Application
                     return new PortAllocator(s.PortRangeMin, s.PortRangeMax);
                 });
                 services.AddSingleton<IUdpBlocker, ProxyForwarder.Infrastructure.Services.UdpBlocker>();
+                services.AddSingleton<ILatencyProbe, ProxyForwarder.Infrastructure.Services.LatencyProbe>();
                 services.AddSingleton<IProxyRepository, ProxyRepository>();
 
                 // Register ViewModels for dependency injection

@@ -33,6 +33,16 @@ public sealed class AppSettings
     public int MaxProxiesPerSync { get; set; } = 10000;
 }
 
+public interface ILatencyProbe
+{
+    /// <summary>
+    /// Measure latency through upstream HTTP proxy: CONNECT www.google.com:443 (upstream resolves)
+    /// If CONNECT fails, fallback to GET http://www.google.com/generate_204.
+    /// Returns milliseconds or null on error/timeout. No local DNS resolution - prevents DNS leak.
+    /// </summary>
+    Task<long?> ProbeAsync(string proxyHost, int proxyPort, string? user, string? pass, int timeoutMs = 8000, CancellationToken ct = default);
+}
+
 public interface IUdpBlocker
 {
     Task ApplyAsync(bool enable, CancellationToken ct = default);
