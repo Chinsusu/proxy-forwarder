@@ -102,9 +102,10 @@ public partial class ProxiesViewModel : ObservableObject
     {
         var list = Items.ToList();
         if (list.Count == 0) return;
-        System.Diagnostics.Debug.WriteLine($"[PopulateIspAsync] Starting for {list.Count} proxies");
 
-        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
         var tasks = list.Select(async p =>
         {
             await _sem.WaitAsync(cts.Token);
@@ -141,11 +142,13 @@ public partial class ProxiesViewModel : ObservableObject
         });
         await Task.WhenAll(tasks);
 
-        // Save all updated proxies to database
-        try
-        {
-            await _repo.UpsertProxiesAsync(list);
+            // Save all updated proxies to database
+            try
+            {
+                await _repo.UpsertProxiesAsync(list);
+            }
+            catch { /* ignore save errors */ }
         }
-        catch { /* ignore save errors */ }
+        catch { /* ignore all errors */ }
     }
 }
