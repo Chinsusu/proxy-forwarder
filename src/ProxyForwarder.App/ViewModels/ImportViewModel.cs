@@ -63,7 +63,14 @@ public partial class ImportViewModel : ObservableObject
                     r.Type = ProxyTypeClassifier.ClassifyByPrice(price);
                     r.Location = location;
                     r.ExpirationDate = expirationDate;
+                    // ISP: use returned isp, or extract from location (format: "Country - ISP")
                     r.ISP = isp;
+                    if (string.IsNullOrWhiteSpace(r.ISP) && !string.IsNullOrWhiteSpace(location))
+                    {
+                        var parts = location.Split(" - ");
+                        if (parts.Length >= 2)
+                            r.ISP = parts[^1].Trim();
+                    }
                     records.Add(r);
                 }
             }
