@@ -49,14 +49,19 @@ public partial class ImportViewModel : ObservableObject
                 return;
             }
             var settings = (ISettingsProvider)App.HostInstance!.Services.GetRequiredService(typeof(ISettingsProvider));
-            var raws = await _client.GetAllProxiesByTypeAsync(tk, TypeFilter.Trim(), settings.Current.MaxProxiesPerSync, CancellationToken.None);
+            var rawsWithMetadata = await _client.GetAllProxiesWithMetadataAsync(tk, TypeFilter.Trim(), settings.Current.MaxProxiesPerSync, CancellationToken.None);
             // Clear all existing proxies before importing new ones
             await _repo.ClearAllAsync();
             
             var records = new List<ProxyRecord>();
-            foreach (var s in raws)
+            foreach (var (proxyStr, price) in rawsWithMetadata)
             {
-                if (ProxyParser.TryParse(s, out var r)) records.Add(r);
+                if (ProxyParser.TryParse(proxyStr, out var r))
+                {
+                    // Classify proxy type based on price
+                    r.Type = ProxyTypeClassifier.ClassifyByPrice(price);
+                    records.Add(r);
+                }
             }
             await _repo.UpsertProxiesAsync(records);
             System.Windows.MessageBox.Show($"Đã sync {records.Count} proxy.");

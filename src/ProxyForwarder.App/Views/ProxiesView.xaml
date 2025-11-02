@@ -9,11 +9,12 @@
                   CanUserAddRows="False" Background="{StaticResource Brush.Surface}" 
                   Foreground="{StaticResource Brush.Text}" GridLinesVisibility="Horizontal">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="120"/>
                 <DataGridTextColumn Header="Host" Binding="{Binding Host}" Width="200"/>
                 <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="80"/>
                 <DataGridTextColumn Header="User" Binding="{Binding Username}" Width="120"/>
                 <DataGridTextColumn Header="Region" Binding="{Binding RegionCode}" Width="100"/>
-                <DataGridTextColumn Header="Imported" Binding="{Binding ImportedAtUtc}" Width="200"/>
+                <DataGridTextColumn Header="Imported" Binding="{Binding ImportedAtUtc}" Width="180"/>
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>
