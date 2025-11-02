@@ -10,7 +10,7 @@
                   GridLinesVisibility="Horizontal">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Upstream" Binding="{Binding Upstream}" Width="*"/>
-                <DataGridTextColumn Header="Local Port" Binding="{Binding LocalPort}" Width="100"/>
+                <DataGridTextColumn Header="Local Proxy" Binding="{Binding LocalPort, Converter={StaticResource LocalPortConverter}}" Width="150"/>
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
                 <DataGridTemplateColumn Header="Actions" Width="160">
                     <DataGridTemplateColumn.CellTemplate>

@@ -9,6 +9,7 @@
             </ResourceDictionary.MergedDictionaries>
             <local:RemainingTimeConverter x:Key="RemainingTimeConverter"/>
             <local:StatusToButtonTextConverter x:Key="StatusToButtonTextConverter"/>
+            <local:LocalPortConverter x:Key="LocalPortConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
