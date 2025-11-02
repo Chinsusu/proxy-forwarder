@@ -49,7 +49,18 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
     {
         _cts.Cancel();
         try { _listener.Stop(); } catch { }
-        if (_acceptLoop is not null) await _acceptLoop;
+        if (_acceptLoop is not null)
+        {
+            try
+            {
+                await _acceptLoop.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ChainedHttpProxy] AcceptLoop error: {ex.Message}");
+            }
+        }
     }
 
     public async ValueTask DisposeAsync() => await StopAsync();

@@ -65,7 +65,16 @@ public sealed class ForwarderService : IForwarderService, IAsyncDisposable
         }
 
         if (forwarder is not null)
-            await forwarder.DisposeAsync();
+        {
+            try
+            {
+                await forwarder.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"✗ Error stopping proxy: {ex.Message}");
+            }
+        }
     }
 
     public bool IsRunning(Guid proxyId)

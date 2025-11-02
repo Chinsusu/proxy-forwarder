@@ -90,6 +90,15 @@ public partial class App : Application
     {
         if (HostInstance is not null)
         {
+            try
+            {
+                // Dispose all forwarders before shutdown
+                var forwarderService = HostInstance.Services.GetService(typeof(IForwarderService)) as IAsyncDisposable;
+                if (forwarderService is not null)
+                    await forwarderService.DisposeAsync();
+            }
+            catch { }
+            
             await HostInstance.StopAsync();
             HostInstance.Dispose();
         }
