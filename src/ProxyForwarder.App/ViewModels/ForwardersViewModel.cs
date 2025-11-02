@@ -13,6 +13,7 @@ public partial class ForwardersViewModel : ObservableObject
     private readonly IProxyRepository _repo;
     private readonly IForwarderService _forwarder;
     private readonly PortAllocator _ports;
+    private readonly INotificationService _notifications;
 
     [ObservableProperty] private ObservableCollection<ForwarderRow> rows = new();
 
@@ -27,11 +28,15 @@ public partial class ForwardersViewModel : ObservableObject
         _repo = (IProxyRepository)sp.GetRequiredService(typeof(IProxyRepository));
         _forwarder = (IForwarderService)sp.GetRequiredService(typeof(IForwarderService));
         _ports = (PortAllocator)sp.GetRequiredService(typeof(PortAllocator));
+        _notifications = (INotificationService)sp.GetRequiredService(typeof(INotificationService));
 
         StartAllCommand = new AsyncRelayCommand(StartAllAsync);
         StopAllCommand = new AsyncRelayCommand(StopAllAsync);
         StartOneCommand = new AsyncRelayCommand<ForwarderRow>(StartOneAsync);
         StopOneCommand = new AsyncRelayCommand<ForwarderRow>(StopOneAsync);
+
+        // Subscribe to proxies synced event to reload forwarders
+        _notifications.ProxiesSynced += async (_, _) => await LoadAsync();
 
         _ = LoadAsync();
     }
