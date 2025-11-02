@@ -2,8 +2,8 @@
 // Copyright (c) ProxyForwarder. All rights reserved.
 // </copyright>
 
-using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Net;
 using System.Net.NetworkInformation;
 using ProxyForwarder.Core.Abstractions;
 using ProxyForwarder.Core.Entities;
@@ -11,33 +11,85 @@ using ProxyForwarder.Core.Entities;
 namespace ProxyForwarder.Forwarding;
 
 /// <summary>
-/// Forwarder service that marks proxies as running.
-/// Note: Actual proxy forwarding via Titanium.Web.Proxy is disabled to prevent SSL certificate dialogs.
-/// Configure the returned local port (127.0.0.1:PORT) in your client applications.
+/// Forwarder service using HTTP explicit proxy chaining.
+/// Prevents DNS leaks by forwarding all requests through upstream proxy (CONNECT for HTTPS, absolute-URI for HTTP).
+/// No SSL MITM, no local certificate management.
 /// </summary>
-public sealed class ForwarderService : IForwarderService
+public sealed class ForwarderService : IForwarderService, IAsyncDisposable
 {
-    private readonly ConcurrentDictionary<Guid, (ProxyRecord proxy, int port)> _map = new();
+    private readonly Dictionary<Guid, ChainedHttpProxy> _running = new();
+    private readonly object _lock = new();
 
-    public Task<int> StartAsync(ProxyRecord proxy, int localPort, CancellationToken ct)
+    public async Task<int> StartAsync(ProxyRecord proxy, int localPort, CancellationToken ct)
     {
-        if (_map.ContainsKey(proxy.Id)) return Task.FromResult(localPort);
-
-        _map[proxy.Id] = (proxy, localPort);
-        Debug.WriteLine($"✓ Forwarder marked as running: {proxy.Host}:{proxy.Port} → 127.0.0.1:{localPort}");
-        return Task.FromResult(localPort);
-    }
-
-    public Task StopAsync(Guid proxyId)
-    {
-        if (_map.TryRemove(proxyId, out var entry))
+        lock (_lock)
         {
-            Debug.WriteLine($"✓ Forwarder stopped: {entry.proxy.Host}:{entry.proxy.Port}");
+            if (_running.ContainsKey(proxy.Id)) return localPort;
         }
-        return Task.CompletedTask;
+
+        try
+        {
+            // Parse upstream: HOST:PORT[:USER:PASS]
+            var parts = proxy.Host.Split(':');
+            var upHost = parts[0];
+            if (!int.TryParse(parts.Length > 1 ? parts[1] : "80", out var upPort))
+                upPort = 80;
+            var upUser = parts.Length > 2 ? parts[2] : null;
+            var upPass = parts.Length > 3 ? parts[3] : null;
+
+            var forwarder = new ChainedHttpProxy(IPAddress.Loopback, localPort, upHost, upPort, upUser, upPass);
+            forwarder.Start();
+
+            lock (_lock)
+            {
+                _running[proxy.Id] = forwarder;
+            }
+
+            Debug.WriteLine($"✓ HTTP proxy chaining started: 127.0.0.1:{localPort} → {upHost}:{upPort}");
+            return await Task.FromResult(localPort);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"✗ Failed to start forwarder: {ex.Message}");
+            throw;
+        }
     }
 
-    public bool IsRunning(Guid proxyId) => _map.ContainsKey(proxyId);
+    public async Task StopAsync(Guid proxyId)
+    {
+        ChainedHttpProxy? forwarder = null;
+        lock (_lock)
+        {
+            if (_running.Remove(proxyId, out forwarder))
+            {
+                Debug.WriteLine($"✓ HTTP proxy stopped for {proxyId}");
+            }
+        }
+
+        if (forwarder is not null)
+            await forwarder.DisposeAsync();
+    }
+
+    public bool IsRunning(Guid proxyId)
+    {
+        lock (_lock)
+        {
+            return _running.ContainsKey(proxyId);
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        List<ChainedHttpProxy> toDispose;
+        lock (_lock)
+        {
+            toDispose = _running.Values.ToList();
+            _running.Clear();
+        }
+
+        foreach (var f in toDispose)
+            await f.DisposeAsync();
+    }
 }
 
 public sealed class PortAllocator
