@@ -29,56 +29,64 @@ public sealed class CloudMiniClient : ICloudMiniClient
         }
         else
         {
-            req.Headers.TryAddWithoutValidation(s.AuthHeader, 
+            req.Headers.TryAddWithoutValidation(s.AuthHeader,
                 string.IsNullOrWhiteSpace(s.AuthScheme) ? token : $"{s.AuthScheme} {token}");
         }
     }
 
     private async Task<HttpResponseMessage> TryGetAsync(IEnumerable<string> paths, string token, CancellationToken ct)
     {
-        foreach (var p in paths)
+        HttpResponseMessage? last = null;
+        foreach (var relative in paths)
         {
-            using var req = new HttpRequestMessage(HttpMethod.Get, p);
+            using var req = new HttpRequestMessage(HttpMethod.Get, relative);
             ApplyAuth(req, token);
             var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
             if (res.IsSuccessStatusCode) return res;
+            last = res;
             if (res.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
-                return res;
+                break;
         }
-        return new HttpResponseMessage(HttpStatusCode.NotFound) { RequestMessage = new HttpRequestMessage(HttpMethod.Get, paths.Last()) };
+        return last ?? new HttpResponseMessage(HttpStatusCode.NotFound);
     }
+
+    private static IEnumerable<string> Candidates(string main, params string[] fallbacks)
+        => new[] { main }.Concat(fallbacks).Where(s => !string.IsNullOrWhiteSpace(s));
 
     public async Task<IReadOnlyList<Region>> GetRegionsAsync(string token, CancellationToken ct)
     {
         var s = _settings.Current;
-        var candidates = new[]
+        var fallbacks = new[]
         {
-            s.RegionsPath,
             "proxy/residential/regions",
             "residential/regions",
             "proxy/regions",
             "regions"
-        }.Distinct().ToArray();
-
-        using var res = await TryGetAsync(candidates, token, ct);
+        };
+        using var res = await TryGetAsync(Candidates(s.RegionsPath, fallbacks), token, ct);
         if (!res.IsSuccessStatusCode)
         {
-            var msg = $"Regions endpoint failed (HTTP {(int)res.StatusCode}) at '{res.RequestMessage?.RequestUri}'. Hãy vào Settings để chỉnh RegionsPath.";
+            var tried = string.Join(", ", Candidates(s.RegionsPath, fallbacks).Select(p => new Uri(_http.BaseAddress!, p)));
+            var msg = $"Regions endpoint failed (HTTP {(int)res.StatusCode}). Tried: {tried}";
             throw new HttpRequestException(msg, null, res.StatusCode);
         }
-
-        await using var sStream = await res.Content.ReadAsStreamAsync(ct);
-        using var doc = await JsonDocument.ParseAsync(sStream, cancellationToken: ct);
+        await using var stream = await res.Content.ReadAsStreamAsync(ct);
+        using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
         if (doc.RootElement.ValueKind == JsonValueKind.Array)
         {
             return doc.RootElement.EnumerateArray()
-                .Select(e => new Region { Code = e.GetProperty("code").GetString() ?? "", Name = e.GetProperty("name").GetString() ?? "" })
+                .Select(e => new Region {
+                    Code = e.TryGetProperty("code", out var c) ? c.GetString() ?? "" : "",
+                    Name = e.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "" })
                 .Where(r => !string.IsNullOrWhiteSpace(r.Code)).ToList();
         }
-        if (doc.RootElement.TryGetProperty("regions", out var regions) || doc.RootElement.TryGetProperty("items", out regions))
+        if (doc.RootElement.TryGetProperty("regions", out var arr) ||
+            doc.RootElement.TryGetProperty("items", out arr))
         {
-            return regions.EnumerateArray()
-                .Select(e => new Region { Code = e.GetProperty("code").GetString() ?? "", Name = e.GetProperty("name").GetString() ?? "" })
+            return arr.EnumerateArray()
+                .Select(e => new Region {
+                    Code = e.TryGetProperty("code", out var c) ? c.GetString() ?? "" : "",
+                    Name = e.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "" })
                 .Where(r => !string.IsNullOrWhiteSpace(r.Code)).ToList();
         }
         var list = new List<Region>();
@@ -90,23 +98,20 @@ public sealed class CloudMiniClient : ICloudMiniClient
     public async Task<IReadOnlyList<string>> GetProxiesRawAsync(string token, string regionCode, int count, CancellationToken ct)
     {
         var s = _settings.Current;
-        string Format(string path) => path.Replace("{code}", Uri.EscapeDataString(regionCode)).Replace("{count}", count.ToString());
-
-        var candidates = new[]
+        string F(string p) => p.Replace("{code}", Uri.EscapeDataString(regionCode)).Replace("{count}", count.ToString());
+        var fallbacks = new[]
         {
-            Format(s.ProxiesPath),
-            Format("proxy/residential/proxies?region={code}&count={count}"),
-            Format("residential/proxies?region={code}&count={count}"),
-            Format("proxies?region={code}&count={count}")
-        }.Distinct().ToArray();
-
-        using var res = await TryGetAsync(candidates, token, ct);
+            F("proxy/residential/proxies?region={code}&count={count}"),
+            F("residential/proxies?region={code}&count={count}"),
+            F("proxies?region={code}&count={count}")
+        };
+        using var res = await TryGetAsync(Candidates(F(s.ProxiesPath), fallbacks), token, ct);
         if (!res.IsSuccessStatusCode)
         {
-            var msg = $"Proxies endpoint failed (HTTP {(int)res.StatusCode}) at '{res.RequestMessage?.RequestUri}'. Hãy vào Settings để chỉnh ProxiesPath.";
+            var tried = string.Join(", ", Candidates(F(s.ProxiesPath), fallbacks).Select(p => new Uri(_http.BaseAddress!, p)));
+            var msg = $"Proxies endpoint failed (HTTP {(int)res.StatusCode}). Tried: {tried}";
             throw new HttpRequestException(msg, null, res.StatusCode);
         }
-
         var json = await res.Content.ReadAsStringAsync(ct);
         try
         {
@@ -116,15 +121,9 @@ public sealed class CloudMiniClient : ICloudMiniClient
         catch { }
         using var doc = JsonDocument.Parse(json);
         if (doc.RootElement.TryGetProperty("items", out var items) && items.ValueKind == JsonValueKind.Array)
-        {
-            return items.EnumerateArray().Select(x => x.GetString() ?? string.Empty)
-                .Where(s2 => !string.IsNullOrWhiteSpace(s2)).ToList();
-        }
+            return items.EnumerateArray().Select(x => x.GetString() ?? string.Empty).Where(s2 => !string.IsNullOrWhiteSpace(s2)).ToList();
         if (doc.RootElement.TryGetProperty("proxies", out var arr) && arr.ValueKind == JsonValueKind.Array)
-        {
-            return arr.EnumerateArray().Select(x => x.GetString() ?? string.Empty)
-                .Where(s2 => !string.IsNullOrWhiteSpace(s2)).ToList();
-        }
+            return arr.EnumerateArray().Select(x => x.GetString() ?? string.Empty).Where(s2 => !string.IsNullOrWhiteSpace(s2)).ToList();
         return Array.Empty<string>();
     }
 }

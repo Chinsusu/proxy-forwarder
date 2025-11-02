@@ -45,7 +45,8 @@ public partial class App : Application
                 services.AddHttpClient<ICloudMiniClient, CloudMiniClient>((sp, c) =>
                 {
                     var settings = sp.GetRequiredService<ISettingsProvider>().Current;
-                    c.BaseAddress = new Uri(settings.ApiBaseUrl);
+                    var url = settings.ApiBaseUrl.EndsWith("/") ? settings.ApiBaseUrl : settings.ApiBaseUrl + "/";
+                    c.BaseAddress = new Uri(url); // ensure trailing slash for relative paths
                     c.Timeout = TimeSpan.FromSeconds(20);
                 });
 

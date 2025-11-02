@@ -13,6 +13,10 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private int portRangeMin;
     [ObservableProperty] private int portRangeMax;
     [ObservableProperty] private bool autoStartForwarders;
+    [ObservableProperty] private string regionsPath = "";
+    [ObservableProperty] private string proxiesPath = "";
+    [ObservableProperty] private string authHeader = "";
+    [ObservableProperty] private string authScheme = "";
 
     public IAsyncRelayCommand SaveCommand { get; }
 
@@ -23,6 +27,10 @@ public partial class SettingsViewModel : ObservableObject
         PortRangeMin = _settings.Current.PortRangeMin;
         PortRangeMax = _settings.Current.PortRangeMax;
         AutoStartForwarders = _settings.Current.AutoStartForwarders;
+        RegionsPath = _settings.Current.RegionsPath;
+        ProxiesPath = _settings.Current.ProxiesPath;
+        AuthHeader = _settings.Current.AuthHeader;
+        AuthScheme = _settings.Current.AuthScheme;
         SaveCommand = new AsyncRelayCommand(SaveAsync);
     }
 
@@ -32,6 +40,10 @@ public partial class SettingsViewModel : ObservableObject
         _settings.Current.PortRangeMin = PortRangeMin;
         _settings.Current.PortRangeMax = PortRangeMax;
         _settings.Current.AutoStartForwarders = AutoStartForwarders;
+        _settings.Current.RegionsPath = RegionsPath;
+        _settings.Current.ProxiesPath = ProxiesPath;
+        _settings.Current.AuthHeader = AuthHeader;
+        _settings.Current.AuthScheme = AuthScheme;
         await _settings.SaveAsync();
     }
 }

@@ -1,8 +1,15 @@
 <UserControl x:Class="ProxyForwarder.App.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Margin="20" Width="700">
+    <Grid Margin="20" Width="760">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -11,13 +18,27 @@
         </Grid.RowDefinitions>
         <TextBlock Text="API Base URL"/>
         <TextBox Grid.Row="1" Text="{Binding ApiBaseUrl}"/>
-        <TextBlock Grid.Row="2" Text="Port Range (min - max)" Margin="0,8,0,0"/>
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
+
+        <TextBlock Grid.Row="2" Text="Regions Path" Margin="0,8,0,0"/>
+        <TextBox Grid.Row="3" Text="{Binding RegionsPath}" ToolTip="vd: regions hoac proxy/residential/regions"/>
+
+        <TextBlock Grid.Row="4" Text="Proxies Path" Margin="0,8,0,0"/>
+        <TextBox Grid.Row="5" Text="{Binding ProxiesPath}" ToolTip="vd: proxies?region={code}&amp;count={count}"/>
+
+        <TextBlock Grid.Row="6" Text="Auth header / scheme" Margin="0,8,0,0"/>
+        <StackPanel Grid.Row="7" Orientation="Horizontal">
+            <TextBox Width="180" Text="{Binding AuthHeader}" ToolTip="Authorization hoac X-API-Key" Margin="0,0,8,0"/>
+            <TextBox Width="180" Text="{Binding AuthScheme}" ToolTip="Bearer hoac de trong"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="8" Text="Port Range (min - max)" Margin="0,8,0,0"/>
+        <StackPanel Grid.Row="9" Orientation="Horizontal">
             <TextBox Width="120" Text="{Binding PortRangeMin}" Margin="0,0,8,0"/>
             <TextBlock Text="→" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Width="120" Text="{Binding PortRangeMax}"/>
         </StackPanel>
-        <CheckBox Grid.Row="4" Content="Auto start forwarders on launch" IsChecked="{Binding AutoStartForwarders}" Margin="0,8,0,0"/>
-        <Button Grid.Row="5" Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Margin="0,12,0,0" Width="120"/>
+
+        <CheckBox Grid.Row="10" Content="Auto start forwarders on launch" IsChecked="{Binding AutoStartForwarders}" Margin="0,8,0,0"/>
+        <Button Grid.Row="11" Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Margin="0,12,0,0" Width="120"/>
     </Grid>
 </UserControl>
