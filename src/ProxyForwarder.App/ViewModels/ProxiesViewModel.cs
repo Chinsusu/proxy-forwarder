@@ -45,7 +45,8 @@ public partial class ProxiesViewModel : ObservableObject
 
     private async Task RefreshAsync()
     {
-        var all = await _repo.GetAllAsync();
+        // Load proxies from in-memory storage (NotificationService)
+        var all = _notifications.GetProxies();
         Items = new ObservableCollection<ProxyRecord>(all);
         // Auto-populate ISP after refresh
         await PopulateIspAsync();

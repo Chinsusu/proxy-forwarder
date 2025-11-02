@@ -51,8 +51,6 @@ public partial class ImportViewModel : ObservableObject
             }
             var settings = (ISettingsProvider)App.HostInstance!.Services.GetRequiredService(typeof(ISettingsProvider));
             var rawsWithMetadata = await _client.GetAllProxiesWithMetadataAsync(tk, TypeFilter.Trim(), settings.Current.MaxProxiesPerSync, CancellationToken.None);
-            // Clear all existing proxies before importing new ones
-            await _repo.ClearAllAsync();
             
             var records = new List<ProxyRecord>();
             foreach (var (proxyStr, price, location, expirationDate, isp) in rawsWithMetadata)
@@ -67,9 +65,11 @@ public partial class ImportViewModel : ObservableObject
                     records.Add(r);
                 }
             }
-            await _repo.UpsertProxiesAsync(records);
+            // Store proxies in-memory via NotificationService
+            _notifications.SetProxies(records);
+            
             SyncMessage = $"✓ Đã sync {records.Count} proxy.";
-            // Notify other ViewModels to refresh
+            // Notify ProxiesViewModel to load proxies in-memory
             _notifications.NotifyProxiesSynced();
         }
         catch (HttpRequestException ex)
