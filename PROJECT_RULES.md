@@ -198,3 +198,48 @@ Before committing:
 - [ ] Code follows naming conventions
 - [ ] No hardcoded secrets or sensitive data
 - [ ] Comments for complex logic
+
+## Troubleshooting
+
+### Build Issues
+
+**Problem**: `TreatWarningsAsErrors` blocks build  
+**Solution**: Set `TreatWarningsAsErrors=false` in `Directory.Build.props`
+
+**Problem**: Missing XML documentation (CS1591)  
+**Solution**: Add to `NoWarn`: `CS1591`
+
+**Problem**: StyleCop warnings (SA1633, SA1636, etc.)  
+**Solution**: Add to `NoWarn`: `SA1633,SA1636,SA1200,SA1513,SA1516,SA1309,SA1101`
+
+### Runtime Issues
+
+**Problem**: GUI doesn't appear after build  
+**Cause**: DI container not initialized before ViewModel creation  
+**Solution**:
+- Don't use `StartupUri` in App.xaml
+- Build DI container in `OnStartup()` BEFORE creating MainWindow
+- Add global exception handlers to see errors:
+  ```csharp
+  DispatcherUnhandledException += (s, ex) => MessageBox.Show(ex.Exception.ToString());
+  AppDomain.CurrentDomain.UnhandledException += (s, ex) => MessageBox.Show(ex.ExceptionObject?.ToString());
+  ```
+
+**Problem**: ViewModel can't access DI services  
+**Solution**: Ensure `App.HostInstance` is set before ViewModel constructor runs
+
+### XAML Issues
+
+**Problem**: `'ColumnDefinitions' property is read-only`  
+**Solution**: Use `<Grid.ColumnDefinitions>` element instead of attribute
+
+**Problem**: `'Spacing' property does not exist` in WPF  
+**Solution**: `Spacing` is WinUI only. Use `Margin` on child elements instead
+
+## Recommended Improvements (Optional)
+
+For production, consider:
+1. Add Serilog logging to App.xaml.cs OnStartup/OnExit
+2. Implement `IDisposable` in ViewModels for cleanup
+3. Add error recovery in exception handlers (retry logic)
+4. Use `Task.Run()` for long-running operations to prevent UI freeze
