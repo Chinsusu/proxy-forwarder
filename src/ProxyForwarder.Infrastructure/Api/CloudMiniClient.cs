@@ -135,18 +135,15 @@ public sealed class CloudMiniClient : ICloudMiniClient
         var result = new List<string>(capacity: Math.Max(limit, maxCount));
 
         string F(int p, int off) =>
-            s.AllProxiesPath.Replace("{type}", Uri.EscapeDataString(type))
-                            .Replace("{page}", p.ToString())
+            s.AllProxiesPath.Replace("{page}", p.ToString())
                             .Replace("{limit}", limit.ToString())
                             .Replace("{offset}", off.ToString());
         string[] candidates(int p) => new[]
         {
             F(p, (p-1)*limit),
-            $"proxies?type={Uri.EscapeDataString(type)}&page={p}&limit={limit}",
-            $"proxies?type={Uri.EscapeDataString(type)}&limit={limit}&offset={(p-1)*limit}",
-            $"proxy/list?type={Uri.EscapeDataString(type)}&page={p}&size={limit}",
-            $"proxy?type={Uri.EscapeDataString(type)}&page={p}&limit={limit}",
-            $"proxies?page={p}&limit={limit}"
+            $"proxy?page={p}&limit={limit}",
+            $"proxy?limit={limit}&offset={(p-1)*limit}",
+            $"proxy"
         };
 
         while (imported < maxCount)

@@ -28,8 +28,8 @@
         <TextBlock Grid.Row="4" Text="Proxies Path (by region)" Margin="0,8,0,0"/>
         <TextBox Grid.Row="5" Text="{Binding ProxiesPath}" ToolTip="vd: proxies?region={code}&amp;count={count}"/>
 
-        <TextBlock Grid.Row="6" Text="All Proxies Path (by type)" Margin="0,8,0,0"/>
-        <TextBox Grid.Row="7" Text="{Binding AllProxiesPath}" ToolTip="vd: proxies?type={type}&amp;page={page}&amp;limit={limit}"/>
+        <TextBlock Grid.Row="6" Text="All Proxies Path" Margin="0,8,0,0"/>
+        <TextBox Grid.Row="7" Text="{Binding AllProxiesPath}" ToolTip="CloudMini: proxy hoặc proxy?page={page}&amp;limit={limit}"/>
 
         <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0,8,0,0">
             <TextBlock Text="Page size" VerticalAlignment="Center" Margin="0,0,8,0"/>

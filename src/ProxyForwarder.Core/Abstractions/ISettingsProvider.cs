@@ -18,11 +18,12 @@ public sealed class AppSettings
     public string RegionsPath { get; set; } = "regions";
     // Use {code} and {count} placeholders
     public string ProxiesPath { get; set; } = "proxies?region={code}&count={count}";
-    // Auth
+    // Auth (CloudMini uses "Token" scheme)
     public string AuthHeader { get; set; } = "Authorization"; // "Authorization", "X-API-Key", ...
-    public string AuthScheme { get; set; } = "Bearer";        // "Bearer" or empty
-    // ---- Sync-all (by type) ----
-    // placeholders: {type} {page} {limit} {offset}
-    public string AllProxiesPath { get; set; } = "proxies?type={type}&page={page}&limit={limit}";
+    public string AuthScheme { get; set; } = "Token";         // "Token" for CloudMini, "Bearer" or empty for others
+    // ---- Sync-all proxies ----
+    // CloudMini: GET /proxy (no pagination needed, returns all)
+    // placeholders: {page} {limit} {offset} (optional if server adds pagination later)
+    public string AllProxiesPath { get; set; } = "proxy";
     public int AllProxiesPageSize { get; set; } = 500;
 }
