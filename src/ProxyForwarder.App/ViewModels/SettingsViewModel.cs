@@ -41,17 +41,18 @@ public partial class SettingsViewModel : ObservableObject
         // Update PortAllocator with new range
         _ports.UpdateRange(PortRangeMin, PortRangeMax);
         
-        try
+        // Only apply UDP block if it's enabled
+        if (BlockUdpForBrowsers)
         {
-            await _udp.ApplyAsync(BlockUdpForBrowsers);
-            if (BlockUdpForBrowsers)
+            try
+            {
+                await _udp.ApplyAsync(true);
                 System.Windows.MessageBox.Show("UDP block rules applied for Chrome/Edge/Firefox.", "Firewall");
-            else
-                System.Windows.MessageBox.Show("UDP block rules removed.", "Firewall");
-        }
-        catch (Exception ex)
-        {
-            System.Windows.MessageBox.Show(ex.Message, "Firewall Error");
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Firewall Error");
+            }
         }
     }
 }
