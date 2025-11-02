@@ -34,15 +34,15 @@ public partial class ForwardersViewModel : ObservableObject
 
         // Subscribe to proxies synced event to reload forwarders
         _notifications.ProxiesSynced += async (_, _) => await LoadAsync();
-
-        _ = LoadAsync();
     }
 
     private async Task LoadAsync()
     {
-        var all = await _repo.GetAllAsync();
+        // Load proxies from in-memory storage
+        var all = _notifications.GetProxies();
         // Filter out expired proxies
         var active = all.Where(p => p.ExpirationDate == null || p.ExpirationDate > DateTime.Now).ToList();
+        await Task.CompletedTask; // Keep async signature
         Rows = new ObservableCollection<ForwarderRow>(active.Select(p => new ForwarderRow(p)));
     }
 
