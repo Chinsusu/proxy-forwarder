@@ -39,8 +39,6 @@ public partial class ProxiesViewModel : ObservableObject
         
         // Start 10-minute ping timer
         _pingTimer = new Timer(_ => _ = PingAllAsync(), null, TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(10));
-        
-        _ = RefreshAsync();
     }
 
     private async Task RefreshAsync()
