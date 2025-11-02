@@ -89,13 +89,6 @@ public partial class ProxiesViewModel : ObservableObject
             finally { _sem.Release(); }
         });
         await Task.WhenAll(tasks);
-        
-        // Save all updated proxies to database
-        try
-        {
-            await _repo.UpsertProxiesAsync(list);
-        }
-        catch { /* ignore save errors */ }
     }
 
     private async Task PopulateIspAsync()
@@ -140,13 +133,6 @@ public partial class ProxiesViewModel : ObservableObject
                 }
                 catch { /* ignore per-item errors */ }
             }
-
-            // Save all updated proxies to database
-            try
-            {
-                await _repo.UpsertProxiesAsync(list);
-            }
-            catch { /* ignore save errors */ }
         }
         catch { /* ignore all errors */ }
     }
