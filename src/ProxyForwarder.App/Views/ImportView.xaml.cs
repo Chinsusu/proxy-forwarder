@@ -4,6 +4,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using ProxyForwarder.App.ViewModels;
 
 namespace ProxyForwarder.App.Views;
@@ -13,6 +14,7 @@ public partial class ImportView : UserControl
     public ImportView()
     {
         InitializeComponent();
+        DataContext = App.HostInstance!.Services.GetRequiredService<ImportViewModel>();
     }
 
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)

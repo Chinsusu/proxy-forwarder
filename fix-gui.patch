@@ -1,0 +1,112 @@
+diff --git a/src/ProxyForwarder.App/App.xaml b/src/ProxyForwarder.App/App.xaml
+index e69de29..e69de29 100644
+--- a/src/ProxyForwarder.App/App.xaml
++++ b/src/ProxyForwarder.App/App.xaml
+@@ -1,11 +1,9 @@
+ <Application x:Class="ProxyForwarder.App.App"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+-             StartupUri="MainWindow.xaml">
++             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+-        <ResourceDictionary>
+-            <ResourceDictionary.MergedDictionaries>
+-                <ResourceDictionary Source="Assets/Styles.xaml"/>
+-            </ResourceDictionary.MergedDictionaries>
+-        </ResourceDictionary>
++       <ResourceDictionary>
++           <ResourceDictionary.MergedDictionaries>
++               <ResourceDictionary Source="Assets/Styles.xaml"/>
++           </ResourceDictionary.MergedDictionaries>
++       </ResourceDictionary>
+     </Application.Resources>
+ </Application>
+diff --git a/src/ProxyForwarder.App/App.xaml.cs b/src/ProxyForwarder.App/App.xaml.cs
+index e69de29..e69de29 100644
+--- a/src/ProxyForwarder.App/App.xaml.cs
++++ b/src/ProxyForwarder.App/App.xaml.cs
+@@ -1,71 +1,84 @@
+ using System;
+ using System.Windows;
++using Microsoft.EntityFrameworkCore;
+ using Microsoft.Extensions.DependencyInjection;
+ using Microsoft.Extensions.Hosting;
+ using ProxyForwarder.Core.Abstractions;
+ using ProxyForwarder.Forwarding;
+ using ProxyForwarder.Infrastructure.Api;
+ using ProxyForwarder.Infrastructure.Data;
+ using ProxyForwarder.Infrastructure.Security;
+ using ProxyForwarder.Infrastructure.Services;
++using ProxyForwarder.App.ViewModels;
+ 
+ namespace ProxyForwarder.App;
+ 
+ public partial class App : Application
+ {
+     public static IHost? HostInstance { get; private set; }
+ 
+     protected override void OnStartup(StartupEventArgs e)
+     {
++        this.DispatcherUnhandledException += (s, ex) =>
++        {
++            MessageBox.Show(ex.Exception.ToString(), "Unhandled UI Exception");
++            ex.Handled = true;
++        };
++        AppDomain.CurrentDomain.UnhandledException += (s, ex) =>
++        {
++            MessageBox.Show(ex.ExceptionObject?.ToString() ?? "(no details)", "Unhandled Exception");
++        };
++
+         HostInstance = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
+             .ConfigureServices((ctx, services) =>
+             {
+                 services.AddSingleton<ISettingsProvider, SettingsProvider>();
+ 
+                 services.AddDbContextFactory<ForwarderDbContext>(o =>
+-                    o.UseSqlite($"Data Source={System.IO.Path.Combine(AppContext.BaseDirectory, \"forwarder.db\")}"));
++                    o.UseSqlite($"Data Source={System.IO.Path.Combine(AppContext.BaseDirectory, "forwarder.db")}"));
+ 
+                 services.AddHttpClient<ICloudMiniClient, CloudMiniClient>((sp, c) =>
+                 {
+                     var settings = sp.GetRequiredService<ISettingsProvider>().Current;
+                     c.BaseAddress = new Uri(settings.ApiBaseUrl);
+                     c.Timeout = TimeSpan.FromSeconds(20);
+                 });
+ 
+                 services.AddSingleton<ISecureStorage, SecureStorage>();
+                 services.AddSingleton<IForwarderService, ForwarderService>();
+                 services.AddSingleton<PortAllocator>(sp =>
+                 {
+                     var s = sp.GetRequiredService<ISettingsProvider>().Current;
+                     return new PortAllocator(s.PortRangeMin, s.PortRangeMax);
+                 });
+                 services.AddSingleton<IProxyRepository, ProxyRepository>();
++
++                services.AddTransient<ImportViewModel>();
++                services.AddTransient<ProxiesViewModel>();
++                services.AddTransient<ForwardersViewModel>();
++                services.AddTransient<LogsViewModel>();
++                services.AddTransient<SettingsViewModel>();
+ 
+                 services.AddSingleton<MainWindow>();
+             })
+             .Build();
+ 
+         HostInstance.Start();
++        this.ShutdownMode = ShutdownMode.OnMainWindowClose;
+         var window = HostInstance.Services.GetRequiredService<MainWindow>();
+         window.Show();
+ 
+         base.OnStartup(e);
+     }
+ 
+     protected override async void OnExit(ExitEventArgs e)
+     {
+         if (HostInstance is not null)
+         {
+             await HostInstance.StopAsync();
+             HostInstance.Dispose();
+         }
+         base.OnExit(e);
+     }
+ }

@@ -22,6 +22,17 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        // Exception handlers to diagnose GUI issues
+        this.DispatcherUnhandledException += (s, ex) =>
+        {
+            MessageBox.Show(ex.Exception.ToString(), "Unhandled UI Exception");
+            ex.Handled = true;
+        };
+        AppDomain.CurrentDomain.UnhandledException += (s, ex) =>
+        {
+            MessageBox.Show(ex.ExceptionObject?.ToString() ?? "(no details)", "Unhandled Exception");
+        };
+
         HostInstance = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
             .ConfigureServices((ctx, services) =>
             {
@@ -46,14 +57,21 @@ public partial class App : Application
                 });
                 services.AddSingleton<IProxyRepository, ProxyRepository>();
 
+                // Register ViewModels for dependency injection
+                services.AddTransient<ProxyForwarder.App.ViewModels.ImportViewModel>();
+                services.AddTransient<ProxyForwarder.App.ViewModels.ProxiesViewModel>();
+                services.AddTransient<ProxyForwarder.App.ViewModels.ForwardersViewModel>();
+                services.AddTransient<ProxyForwarder.App.ViewModels.LogsViewModel>();
+                services.AddTransient<ProxyForwarder.App.ViewModels.SettingsViewModel>();
+
                 services.AddSingleton<MainWindow>();
             })
             .Build();
 
         HostInstance.Start();
+        this.ShutdownMode = ShutdownMode.OnMainWindowClose;
         var window = HostInstance.Services.GetRequiredService<MainWindow>();
         window.Show();
-        base.OnStartup(e);
     }
 
     protected override async void OnExit(ExitEventArgs e)
