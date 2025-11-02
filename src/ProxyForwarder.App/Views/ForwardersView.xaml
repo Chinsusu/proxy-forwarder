@@ -15,7 +15,7 @@
                 <DataGridTemplateColumn Header="Actions" Width="160">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Status}" Command="{Binding DataContext.ToggleOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                            <Button Content="{Binding Status, Converter={StaticResource StatusToButtonTextConverter}}" Command="{Binding DataContext.ToggleOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
