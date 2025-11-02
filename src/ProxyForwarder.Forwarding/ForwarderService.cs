@@ -34,6 +34,25 @@ public sealed class ForwarderService : IForwarderService, IAsyncDisposable
             var upPort = proxy.Port;
             var upUser = proxy.Username;
             var upPass = proxy.Password;
+            
+            // Resolve hostname to IP if needed
+            if (!IPAddress.TryParse(upHost, out _))
+            {
+                try
+                {
+                    var hostEntry = await Dns.GetHostEntryAsync(upHost, System.Net.Sockets.AddressFamily.InterNetwork, ct);
+                    if (hostEntry.AddressList.Length > 0)
+                    {
+                        upHost = hostEntry.AddressList[0].ToString();
+                        Debug.WriteLine($"✓ Resolved {proxy.Host} to {upHost}");
+                    }
+                }
+                catch (Exception dnsEx)
+                {
+                    Debug.WriteLine($"⚠ DNS resolution failed for {proxy.Host}: {dnsEx.Message}");
+                    // Continue with original hostname, let TCP connection attempt it
+                }
+            }
 
             var forwarder = new ChainedHttpProxy(IPAddress.Loopback, localPort, upHost, upPort, upUser, upPass);
             forwarder.Start();
