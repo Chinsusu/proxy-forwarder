@@ -32,7 +32,8 @@ public sealed class ForwarderService : IForwarderService
         server.UpStreamHttpProxy = upstream;
         server.UpStreamHttpsProxy = upstream;
 
-        var ep = new ExplicitProxyEndPoint(IPAddress.Loopback, localPort, true);
+        // Tạo endpoint cục bộ KHÔNG giải mã SSL (chỉ tunnel CONNECT)
+        var ep = new ExplicitProxyEndPoint(IPAddress.Loopback, localPort, decryptSsl: false);
         server.AddEndPoint(ep);
         server.ExceptionFunc = ex => Debug.WriteLine(ex);
         server.Start();

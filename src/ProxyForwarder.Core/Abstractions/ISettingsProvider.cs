@@ -14,6 +14,8 @@ public sealed class AppSettings
     public int PortRangeMin { get; set; } = 11000;
     public int PortRangeMax { get; set; } = 14999;
     public bool AutoStartForwarders { get; set; } = false;
+    // Không giải mã HTTPS mặc định (không cần cài chứng chỉ root)
+    public bool InterceptHttps { get; set; } = false;
     // API endpoints (configurable)
     public string RegionsPath { get; set; } = "regions";
     // Use {code} and {count} placeholders
