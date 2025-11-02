@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using ProxyForwarder.Core.Abstractions;
 using ProxyForwarder.Core.Entities;
 using Titanium.Web.Proxy;
@@ -17,12 +18,24 @@ public sealed class ForwarderService : IForwarderService
 {
     private readonly ConcurrentDictionary<Guid, (ProxyServer server, ExplicitProxyEndPoint ep)> _map = new();
 
+    // Suppress Windows error dialogs
+    [DllImport("kernel32.dll")]
+    private static extern int SetErrorMode(int uMode);
+    // ReSharper disable InconsistentNaming
+    private const int SEM_FAILCRITICALERRORS = 0x0001;
+    private const int SEM_NOALIGNMENTFAULTEXCEPT = 0x0004;
+    private const int SEM_NOGPFAULTERRORBOX = 0x0002;
+    private const int SEM_NOOPENFILEERRORBOX = 0x8000;
+    // ReSharper restore InconsistentNaming
+
     public async Task<int> StartAsync(ProxyRecord proxy, int localPort, CancellationToken ct)
     {
         if (_map.ContainsKey(proxy.Id)) return localPort;
 
         return await Task.Run(() =>
         {
+            // Suppress Windows error dialogs
+            int oldErrorMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
             try
             {
                 var server = new ProxyServer();
@@ -60,6 +73,11 @@ public sealed class ForwarderService : IForwarderService
             {
                 Debug.WriteLine($"ForwarderService.Start error: {ex.Message}");
                 return localPort;
+            }
+            finally
+            {
+                // Restore error mode
+                SetErrorMode(oldErrorMode);
             }
         }, ct);
     }
