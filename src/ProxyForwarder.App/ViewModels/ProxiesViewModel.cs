@@ -30,12 +30,8 @@ public partial class ProxiesViewModel : ObservableObject
         RefreshCommand = new AsyncRelayCommand(RefreshAsync);
         PingCommand = new AsyncRelayCommand(PingAllAsync);
         
-        // Subscribe to proxies synced event - auto-populate ISP after import
-        _notifications.ProxiesSynced += async (_, _) =>
-        {
-            await RefreshAsync();
-            _ = PopulateIspAsync();
-        };
+        // Subscribe to proxies synced event - auto-refresh after import
+        _notifications.ProxiesSynced += async (_, _) => await RefreshAsync();
         
         // Start 10-minute ping timer
         _pingTimer = new Timer(_ => _ = PingAllAsync(), null, TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(10));
@@ -47,6 +43,8 @@ public partial class ProxiesViewModel : ObservableObject
     {
         var all = await _repo.GetAllAsync();
         Items = new ObservableCollection<ProxyRecord>(all);
+        // Auto-populate ISP after refresh
+        _ = PopulateIspAsync();
     }
 
     private async Task PingAllAsync()
@@ -104,6 +102,7 @@ public partial class ProxiesViewModel : ObservableObject
     {
         var list = Items.ToList();
         if (list.Count == 0) return;
+        System.Diagnostics.Debug.WriteLine($"[PopulateIspAsync] Starting for {list.Count} proxies");
 
         using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
         var tasks = list.Select(async p =>
@@ -113,6 +112,7 @@ public partial class ProxiesViewModel : ObservableObject
             {
                 // Get ISP/Location/ExitIP from ipwho.is through proxy
                 var whoisInfo = await _whois.GetIpInfoAsync(p.Host, p.Port, p.Username, p.Password, cts.Token);
+                System.Diagnostics.Debug.WriteLine($"[PopulateIspAsync] {p.Host}:{p.Port} -> ISP={whoisInfo?.Isp}, ExitIp={whoisInfo?.Ip}");
                 if (whoisInfo is not null)
                 {
                     p.ExitIp = whoisInfo.Ip;
