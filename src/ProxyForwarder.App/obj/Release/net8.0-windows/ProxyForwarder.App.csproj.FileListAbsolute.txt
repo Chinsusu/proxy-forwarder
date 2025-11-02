@@ -151,7 +151,6 @@ C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Rel
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\Views\LogsView.baml
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\Views\ProxiesView.baml
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\Views\SettingsView.baml
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\App.baml
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\MainWindow.g.cs
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\Views\ForwardersView.g.cs
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\Views\ImportView.g.cs
@@ -162,6 +161,7 @@ C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Rel
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\GeneratedInternalTypeHelper.g.cs
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\ProxyForwarder.App_MarkupCompile.cache
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\ProxyForwarder.App_MarkupCompile.lref
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\App.baml
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\MainWindow.baml
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\ProxyForwarder.App.g.resources
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.App\obj\Release\net8.0-windows\ProxyForwarder.App.GeneratedMSBuildEditorConfig.editorconfig

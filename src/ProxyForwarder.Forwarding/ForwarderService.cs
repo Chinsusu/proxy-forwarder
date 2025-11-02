@@ -35,6 +35,15 @@ public sealed class ForwarderService : IForwarderService
         // Tạo endpoint cục bộ KHÔNG giải mã SSL (chỉ tunnel CONNECT)
         var ep = new ExplicitProxyEndPoint(IPAddress.Loopback, localPort, decryptSsl: false);
         server.AddEndPoint(ep);
+        
+        // Suppress certificate management completely to avoid any popups
+        try
+        {
+            // Disable certificate checking
+            server.CertificateManager.RemoveTrustedRootCertificate(true);
+        }
+        catch { /* Ignore */ }
+        
         // Suppress all exceptions including certificate-related ones
         server.ExceptionFunc = ex => {
             // Silent fail - don't show popups or write to console
