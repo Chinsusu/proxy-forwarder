@@ -8,4 +8,5 @@ public interface IProxyRepository
 {
     Task UpsertProxiesAsync(IReadOnlyList<ProxyRecord> items);
     Task<IReadOnlyList<ProxyRecord>> GetAllAsync();
+    Task ClearAllAsync();
 }

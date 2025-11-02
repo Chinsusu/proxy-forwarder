@@ -89,6 +89,9 @@ public partial class ImportViewModel : ObservableObject
             }
             var settings = (ISettingsProvider)App.HostInstance!.Services.GetRequiredService(typeof(ISettingsProvider));
             var raws = await _client.GetAllProxiesByTypeAsync(tk, TypeFilter.Trim(), settings.Current.MaxProxiesPerSync, CancellationToken.None);
+            // Clear all existing proxies before importing new ones
+            await _repo.ClearAllAsync();
+            
             var records = new List<ProxyRecord>();
             foreach (var s in raws)
             {

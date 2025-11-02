@@ -32,4 +32,10 @@ public sealed class ProxyRepository : IProxyRepository
         await using var db = await _factory.CreateDbContextAsync();
         return await db.Proxies.AsNoTracking().OrderByDescending(p => p.ImportedAtUtc).ToListAsync();
     }
+
+    public async Task ClearAllAsync()
+    {
+        await using var db = await _factory.CreateDbContextAsync();
+        await db.Proxies.ExecuteDeleteAsync();
+    }
 }
