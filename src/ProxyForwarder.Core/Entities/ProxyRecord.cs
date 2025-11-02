@@ -16,7 +16,7 @@ public sealed class ProxyRecord
     public DateTime? ExpirationDate { get; set; } // When the proxy expires
     public bool Disabled { get; set; }
     
-    /// <summary>Get remaining time until expiration (formatted)</summary>
+    /// <summary>Get remaining time until expiration (formatted as: 1d 2h 5')</summary>
     public string? GetRemainingTime()
     {
         if (!ExpirationDate.HasValue) return "N/A";
@@ -25,10 +25,10 @@ public sealed class ProxyRecord
         if (remaining.TotalSeconds < 0) return "Expired";
         
         if (remaining.TotalDays >= 1)
-            return $"{(int)remaining.TotalDays}d {remaining.Hours}h";
+            return $"{(int)remaining.TotalDays}d {remaining.Hours}h {remaining.Minutes}'";
         if (remaining.TotalHours >= 1)
-            return $"{(int)remaining.TotalHours}h {remaining.Minutes}m";
+            return $"{(int)remaining.TotalHours}h {remaining.Minutes}'";
         
-        return $"{remaining.Minutes}m {remaining.Seconds}s";
+        return $"{remaining.Minutes}'";
     }
 }

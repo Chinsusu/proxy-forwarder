@@ -38,7 +38,7 @@
             </summary>
         </member>
         <member name="M:ProxyForwarder.Core.Entities.ProxyRecord.GetRemainingTime">
-            <summary>Get remaining time until expiration (formatted)</summary>
+            <summary>Get remaining time until expiration (formatted as: 1d 2h 5')</summary>
         </member>
     </members>
 </doc>
