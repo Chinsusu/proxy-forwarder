@@ -5,6 +5,7 @@
 using System;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProxyForwarder.Core.Abstractions;
@@ -69,6 +70,14 @@ public partial class App : Application
             .Build();
 
         HostInstance.Start();
+
+        // Initialize database
+        var dbContextFactory = HostInstance.Services.GetRequiredService<IDbContextFactory<ForwarderDbContext>>();
+        using (var dbContext = dbContextFactory.CreateDbContext())
+        {
+            dbContext.Database.EnsureCreated();
+        }
+
         this.ShutdownMode = ShutdownMode.OnMainWindowClose;
         var window = HostInstance.Services.GetRequiredService<MainWindow>();
         window.Show();

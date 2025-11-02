@@ -1,9 +1,3 @@
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.csproj.AssemblyReference.cache
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.AssemblyInfoInputs.cache
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.AssemblyInfo.cs
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.csproj.CoreCompileInputs.cache
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.sourcelink.json
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\bin\Release\net8.0\ProxyForwarder.Infrastructure.deps.json
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\bin\Release\net8.0\ProxyForwarder.Infrastructure.runtimeconfig.json
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\bin\Release\net8.0\ProxyForwarder.Infrastructure.dll
@@ -11,6 +5,12 @@ C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastruct
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\bin\Release\net8.0\ProxyForwarder.Core.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\bin\Release\net8.0\ProxyForwarder.Core.pdb
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\bin\Release\net8.0\ProxyForwarder.Core.xml
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.AssemblyInfo.cs
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.sourcelink.json
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyFor.F70CDA36.Up2Date
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\ProxyForwarder.Infrastructure.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Infrastructure\obj\Release\net8.0\refint\ProxyForwarder.Infrastructure.dll

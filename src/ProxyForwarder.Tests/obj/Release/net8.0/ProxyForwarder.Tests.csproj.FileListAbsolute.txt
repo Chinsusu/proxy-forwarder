@@ -1,6 +1,6 @@
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\.msCoverageSourceRootsMapping_ProxyForwarder.Tests
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\testhost.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\testhost.exe
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\testhost.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\xunit.runner.visualstudio.testadapter.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\xunit.runner.utility.netcoreapp10.dll
@@ -34,6 +34,7 @@ C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\R
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Logging.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Logging.Debug.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Options.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Primitives.dll
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.TestPlatform.CoreUtilities.dll
@@ -221,4 +222,3 @@ C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\R
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\Release\net8.0\ProxyForwarder.Tests.pdb
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\Release\net8.0\ProxyForwarder.Tests.genruntimeconfig.cache
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\Release\net8.0\ref\ProxyForwarder.Tests.dll
-C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Logging.Debug.dll

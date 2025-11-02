@@ -7,7 +7,9 @@
             <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
         </StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <TextBox Text="{Binding Text}" IsReadOnly="True" TextWrapping="Wrap" Background="#1B1F2A" Foreground="#EAEAEA" BorderThickness="0"/>
+            <TextBox Text="{Binding Text}" IsReadOnly="True" TextWrapping="Wrap"
+                     Background="{StaticResource Brush.Surface}" Foreground="{StaticResource Brush.Text}"
+                     BorderThickness="0"/>
         </ScrollViewer>
     </DockPanel>
 </UserControl>

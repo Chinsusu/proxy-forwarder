@@ -6,7 +6,8 @@
             <Button Content="Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource PrimaryButton}"/>
         </StackPanel>
         <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" HeadersVisibility="Column"
-                  CanUserAddRows="False" Background="#1B1F2A" Foreground="#EAEAEA" GridLinesVisibility="Horizontal">
+                  CanUserAddRows="False" Background="{StaticResource Brush.Surface}" 
+                  Foreground="{StaticResource Brush.Text}" GridLinesVisibility="Horizontal">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Host" Binding="{Binding Host}" Width="200"/>
                 <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="80"/>

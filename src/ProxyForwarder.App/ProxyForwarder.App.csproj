@@ -13,6 +13,12 @@
     <ProjectReference Include="..\ProxyForwarder.Forwarding\ProxyForwarder.Forwarding.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Assets\\app.ico" />
+    <Resource Include="Assets\\app_256.png" />
+    <Resource Include="Assets\\app_512.png" />
+    <Resource Include="Assets\\styles.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>

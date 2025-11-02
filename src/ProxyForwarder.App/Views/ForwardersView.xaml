@@ -7,7 +7,8 @@
             <Button Content="Stop all" Command="{Binding StopAllCommand}" />
         </StackPanel>
         <DataGrid ItemsSource="{Binding Rows}" AutoGenerateColumns="False" CanUserAddRows="False"
-                  Background="#1B1F2A" Foreground="#EAEAEA" GridLinesVisibility="Horizontal">
+                  Background="{StaticResource Brush.Surface}" Foreground="{StaticResource Brush.Text}" 
+                  GridLinesVisibility="Horizontal">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Upstream" Binding="{Binding Upstream}" Width="*"/>
                 <DataGridTextColumn Header="Local Port" Binding="{Binding LocalPort}" Width="100"/>
