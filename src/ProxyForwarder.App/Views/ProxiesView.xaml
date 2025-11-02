@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel Margin="10">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,6">
-            <Button Content="Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource PrimaryButton}"/>
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource PrimaryButton}" Height="36"/>
         </StackPanel>
         <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" HeadersVisibility="Column"
                   CanUserAddRows="False" Background="{StaticResource Brush.Surface}" 
