@@ -44,7 +44,7 @@ public partial class ProxiesViewModel : ObservableObject
         var all = await _repo.GetAllAsync();
         Items = new ObservableCollection<ProxyRecord>(all);
         // Auto-populate ISP after refresh
-        _ = PopulateIspAsync();
+        await PopulateIspAsync();
     }
 
     private async Task PingAllAsync()
