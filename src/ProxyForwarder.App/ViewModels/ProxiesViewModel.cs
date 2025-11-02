@@ -1,4 +1,8 @@
+using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -96,6 +100,13 @@ public partial class ProxiesViewModel : ObservableObject
         var list = Items.ToList();
         if (list.Count == 0) return;
 
+        var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ProxyForwarder", "sync_log.txt");
+        var logDir = Path.GetDirectoryName(logPath);
+        if (logDir != null && !Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] PopulateIspAsync started with {list.Count} proxies");
+
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
@@ -105,11 +116,16 @@ public partial class ProxiesViewModel : ObservableObject
             {
                 try
                 {
+                    sb.AppendLine($"  Fetching ISP for {p.Host}:{p.Port}...");
+                    
                     // Get ISP/Location/ExitIP from ipwho.is through proxy
                     var whoisInfo = await _whois.GetIpInfoAsync(p.Host, p.Port, p.Username, p.Password, cts.Token);
-                    System.Diagnostics.Debug.WriteLine($"[PopulateIspAsync] {p.Host}:{p.Port} -> ISP={whoisInfo?.Isp}, ExitIp={whoisInfo?.Ip}");
+                    
                     if (whoisInfo is not null)
                     {
+                        sb.AppendLine($"    Response: IP={whoisInfo.Ip}, ISP={whoisInfo.Isp}, Org={whoisInfo.Organization}, City={whoisInfo.City}, Country={whoisInfo.Country}");
+                        Debug.WriteLine($"[PopulateIspAsync] {p.Host}:{p.Port} -> ISP={whoisInfo.Isp}, ExitIp={whoisInfo.Ip}");
+                        
                         p.ExitIp = whoisInfo.Ip;
                         p.ISP = whoisInfo.Isp ?? whoisInfo.Organization;
                         if (!string.IsNullOrWhiteSpace(whoisInfo.Country) || !string.IsNullOrWhiteSpace(whoisInfo.City))
@@ -119,6 +135,11 @@ public partial class ProxiesViewModel : ObservableObject
                             if (!string.IsNullOrWhiteSpace(whoisInfo.Country)) loc.Add(whoisInfo.Country);
                             p.Location = string.Join(" - ", loc);
                         }
+                        sb.AppendLine($"    Updated: ISP={p.ISP}, ExitIP={p.ExitIp}, Location={p.Location}");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"    Response: null (no data)");
                     }
 
                     // Force DataGrid refresh
@@ -131,9 +152,24 @@ public partial class ProxiesViewModel : ObservableObject
                         });
                     }
                 }
-                catch { /* ignore per-item errors */ }
+                catch (Exception ex)
+                {
+                    sb.AppendLine($"    Error: {ex.Message}");
+                }
             }
+            sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] PopulateIspAsync completed");
         }
-        catch { /* ignore all errors */ }
+        catch (Exception ex)
+        {
+            sb.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] PopulateIspAsync failed: {ex.Message}");
+        }
+        finally
+        {
+            try
+            {
+                File.AppendAllText(logPath, sb.ToString());
+            }
+            catch { /* ignore logging errors */ }
+        }
     }
 }
