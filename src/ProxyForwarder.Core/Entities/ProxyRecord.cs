@@ -26,6 +26,12 @@ public sealed class ProxyRecord : INotifyPropertyChanged
     private string? _exitIp; // Exit IP from ipwho.is response
     public string? ExitIp { get => _exitIp; set { _exitIp = value; OnPropertyChanged(); } }
     
+    private string? _city; // City from ipwho.is response
+    public string? City { get => _city; set { _city = value; OnPropertyChanged(); } }
+    
+    private string? _country; // Country from ipwho.is response
+    public string? Country { get => _country; set { _country = value; OnPropertyChanged(); } }
+    
     public DateTime ImportedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? ExpirationDate { get; set; } // When the proxy expires
     public bool Disabled { get; set; }

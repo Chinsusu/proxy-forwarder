@@ -70,13 +70,8 @@ public partial class ProxiesViewModel : ObservableObject
                 {
                     p.ExitIp = whoisInfo.Ip;
                     p.ISP = whoisInfo.Isp ?? whoisInfo.Organization;
-                    if (!string.IsNullOrWhiteSpace(whoisInfo.Country) || !string.IsNullOrWhiteSpace(whoisInfo.City))
-                    {
-                        var loc = new List<string>();
-                        if (!string.IsNullOrWhiteSpace(whoisInfo.City)) loc.Add(whoisInfo.City);
-                        if (!string.IsNullOrWhiteSpace(whoisInfo.Country)) loc.Add(whoisInfo.Country);
-                        p.Location = string.Join(" - ", loc);
-                    }
+                    p.City = whoisInfo.City;
+                    p.Country = whoisInfo.Country;
                 }
             }
             catch { /* ignore per-item errors */ }
@@ -123,13 +118,8 @@ public partial class ProxiesViewModel : ObservableObject
                         
                         p.ExitIp = whoisInfo.Ip;
                         p.ISP = whoisInfo.Isp ?? whoisInfo.Organization;
-                        if (!string.IsNullOrWhiteSpace(whoisInfo.Country) || !string.IsNullOrWhiteSpace(whoisInfo.City))
-                        {
-                            var loc = new List<string>();
-                            if (!string.IsNullOrWhiteSpace(whoisInfo.City)) loc.Add(whoisInfo.City);
-                            if (!string.IsNullOrWhiteSpace(whoisInfo.Country)) loc.Add(whoisInfo.Country);
-                            p.Location = string.Join(" - ", loc);
-                        }
+                        p.City = whoisInfo.City;
+                        p.Country = whoisInfo.Country;
                         sb.AppendLine($"    Updated: Ping={p.Ping}ms, ISP={p.ISP}, ExitIP={p.ExitIp}, Location={p.Location}");
                     }
                     else
