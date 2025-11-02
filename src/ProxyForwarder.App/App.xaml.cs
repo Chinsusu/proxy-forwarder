@@ -60,6 +60,7 @@ public partial class App : Application
                 });
                 services.AddSingleton<IUdpBlocker, ProxyForwarder.Infrastructure.Services.UdpBlocker>();
                 services.AddSingleton<ILatencyProbe, ProxyForwarder.Infrastructure.Services.LatencyProbe>();
+                services.AddSingleton<IIpWhoisClient, ProxyForwarder.Infrastructure.Services.IpWhoisClient>();
                 services.AddSingleton<IProxyRepository, ProxyRepository>();
 
                 // Register ViewModels for dependency injection

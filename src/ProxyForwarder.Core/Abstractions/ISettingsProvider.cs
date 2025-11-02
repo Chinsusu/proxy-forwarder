@@ -43,6 +43,16 @@ public interface ILatencyProbe
     Task<long?> ProbeAsync(string proxyHost, int proxyPort, string? user, string? pass, int timeoutMs = 8000, CancellationToken ct = default);
 }
 
+public interface IIpWhoisClient
+{
+    /// <summary>
+    /// Get IP info from ipwho.is through proxy (ISP, Location, Organization).
+    /// </summary>
+    Task<IpWhoisInfo?> GetIpInfoAsync(string proxyHost, int proxyPort, string? user, string? pass, CancellationToken ct = default);
+}
+
+public sealed record IpWhoisInfo(string Ip, string? Isp, string? Organization, string? Country, string? Region, string? City);
+
 public interface IUdpBlocker
 {
     Task ApplyAsync(bool enable, CancellationToken ct = default);

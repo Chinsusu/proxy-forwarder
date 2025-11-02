@@ -11,6 +11,7 @@ public partial class ProxiesViewModel : ObservableObject
 {
     private readonly IProxyRepository _repo;
     private readonly ILatencyProbe _probe;
+    private readonly IIpWhoisClient _whois;
     private readonly INotificationService _notifications;
     private readonly SemaphoreSlim _sem = new(8); // measure up to 8 proxies in parallel
 
@@ -23,6 +24,7 @@ public partial class ProxiesViewModel : ObservableObject
     {
         _repo = (IProxyRepository)App.HostInstance!.Services.GetRequiredService(typeof(IProxyRepository));
         _probe = (ILatencyProbe)App.HostInstance!.Services.GetRequiredService(typeof(ILatencyProbe));
+        _whois = (IIpWhoisClient)App.HostInstance!.Services.GetRequiredService(typeof(IIpWhoisClient));
         _notifications = (INotificationService)App.HostInstance!.Services.GetRequiredService(typeof(INotificationService));
         RefreshCommand = new AsyncRelayCommand(RefreshAsync);
         PingCommand = new AsyncRelayCommand(PingAllAsync);
@@ -48,15 +50,31 @@ public partial class ProxiesViewModel : ObservableObject
             await _sem.WaitAsync(cts.Token);
             try
             {
+                // Measure latency
                 var ms = await _probe.ProbeAsync(p.Host, p.Port, p.Username, p.Password, 8000, cts.Token);
                 p.Ping = ms is null ? null : (int?)ms.Value;
-                // Force DataGrid refresh (replace item in collection to trigger CollectionChanged)
+                
+                // Get ISP/Location from ipwho.is through proxy
+                var whoisInfo = await _whois.GetIpInfoAsync(p.Host, p.Port, p.Username, p.Password, cts.Token);
+                if (whoisInfo is not null)
+                {
+                    p.ISP = whoisInfo.Isp ?? whoisInfo.Organization;
+                    if (!string.IsNullOrWhiteSpace(whoisInfo.Country) || !string.IsNullOrWhiteSpace(whoisInfo.City))
+                    {
+                        var loc = new List<string>();
+                        if (!string.IsNullOrWhiteSpace(whoisInfo.City)) loc.Add(whoisInfo.City);
+                        if (!string.IsNullOrWhiteSpace(whoisInfo.Country)) loc.Add(whoisInfo.Country);
+                        p.Location = string.Join(" - ", loc);
+                    }
+                }
+                
+                // Force DataGrid refresh
                 var idx = Items.IndexOf(p);
                 if (idx >= 0)
                 {
                     await App.Current!.Dispatcher.InvokeAsync(() =>
                     {
-                        Items[idx] = Items[idx]; // raises CollectionChanged
+                        Items[idx] = Items[idx];
                     });
                 }
             }

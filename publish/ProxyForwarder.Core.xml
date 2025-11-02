@@ -25,6 +25,11 @@
             Returns milliseconds or null on error/timeout. No local DNS resolution - prevents DNS leak.
             </summary>
         </member>
+        <member name="M:ProxyForwarder.Core.Abstractions.IIpWhoisClient.GetIpInfoAsync(System.String,System.Int32,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get IP info from ipwho.is through proxy (ISP, Location, Organization).
+            </summary>
+        </member>
         <member name="T:ProxyForwarder.Core.Common.ProxyTypeClassifier">
             <summary>
             Classifies proxy type based on price (monthly) according to CloudMini pricing
