@@ -21,14 +21,9 @@ public partial class ImportViewModel : ObservableObject
     private readonly ISecureStorage _secure;
     private readonly INotificationService _notifications;
 
-    [ObservableProperty] private ObservableCollection<Region> regions = new();
-    [ObservableProperty] private Region? selectedRegion;
-    [ObservableProperty] private int quantity = 1;
     [ObservableProperty] private string token = string.Empty;
     [ObservableProperty] private string typeFilter = "proxy";
 
-    public IAsyncRelayCommand LoadRegionsCommand { get; }
-    public IAsyncRelayCommand ImportCommand { get; }
     public IAsyncRelayCommand SyncAllCommand { get; }
 
     public ImportViewModel()
@@ -39,41 +34,7 @@ public partial class ImportViewModel : ObservableObject
         _secure = (ISecureStorage)App.HostInstance!.Services.GetRequiredService(typeof(ISecureStorage));
         _notifications = (INotificationService)App.HostInstance!.Services.GetRequiredService(typeof(INotificationService));
 
-        LoadRegionsCommand = new AsyncRelayCommand(LoadRegionsAsync);
-        ImportCommand = new AsyncRelayCommand(ImportAsync, CanImport);
         SyncAllCommand = new AsyncRelayCommand(SyncAllAsync);
-    }
-
-    private bool CanImport() => SelectedRegion is not null && Quantity > 0 && !string.IsNullOrWhiteSpace(Token);
-
-    private async Task LoadRegionsAsync()
-    {
-        try
-        {
-            var tk = await _secure.GetTokenAsync() ?? Token;
-            if (string.IsNullOrWhiteSpace(tk)) { return; }
-            var list = await _client.GetRegionsAsync(tk, CancellationToken.None);
-            Regions = new ObservableCollection<Region>(list);
-            Token = tk;
-        }
-        catch (HttpRequestException ex)
-        {
-            System.Windows.MessageBox.Show(ex.Message, "Load Regions failed");
-        }
-    }
-
-    private async Task ImportAsync()
-    {
-        var tk = Token;
-        await _secure.SaveTokenAsync(tk);
-        if (SelectedRegion is null) return;
-        var raws = await _client.GetProxiesRawAsync(tk, SelectedRegion.Code, Quantity, CancellationToken.None);
-        var records = new List<ProxyRecord>();
-        foreach (var s in raws)
-        {
-            if (ProxyParser.TryParse(s, out var r)) records.Add(r);
-        }
-        await _repo.UpsertProxiesAsync(records);
     }
 
     private async Task SyncAllAsync()

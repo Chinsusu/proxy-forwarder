@@ -1,30 +1,9 @@
 <UserControl x:Class="ProxyForwarder.App.Views.ImportView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Margin="24">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <StackPanel Margin="24">
         <TextBlock Text="CloudMini API Token" FontWeight="SemiBold"/>
-        <PasswordBox Grid.Row="1" x:Name="TokenBox" PasswordChar="•" PasswordChanged="PasswordBox_PasswordChanged"/>
-        <TextBlock Grid.Row="2" Text="Chọn Region (tùy chọn) — hoặc bấm Sync Proxy để lấy toàn bộ theo type=proxy" Margin="0,16,0,4"/>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" >
-            <ComboBox Width="400" ItemsSource="{Binding Regions}" SelectedItem="{Binding SelectedRegion}" DisplayMemberPath="Name"/>
-            <!-- Đổi Load Regions -> Sync Proxy: gọi luồng sync-all (type=proxy) -->
-            <Button Margin="8,0,0,0" Content="Sync Proxy" Command="{Binding SyncAllCommand}" Style="{StaticResource PrimaryButton}" />
-        </StackPanel>
-        <TextBlock Grid.Row="4" Text="Số lượng proxy" Margin="0,16,0,4"/>
-        <TextBox Grid.Row="5" Width="120" Text="{Binding Quantity}"/>
-        <Button Grid.Row="6" Grid.ColumnSpan="2" Height="48" Margin="0,20,0,0"
-                Content="Nhập Proxy Vào Danh Sách" Command="{Binding ImportCommand}" Style="{StaticResource PrimaryButton}"/>
-    </Grid>
+        <PasswordBox x:Name="TokenBox" PasswordChar="•" PasswordChanged="PasswordBox_PasswordChanged" Margin="0,0,0,20"/>
+        <Button Height="48" Content="Sync Proxy" Command="{Binding SyncAllCommand}" Style="{StaticResource PrimaryButton}"/>
+    </StackPanel>
 </UserControl>
