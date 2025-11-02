@@ -24,19 +24,22 @@ public partial class ImportViewModel : ObservableObject
     [ObservableProperty] private Region? selectedRegion;
     [ObservableProperty] private int quantity = 1;
     [ObservableProperty] private string token = string.Empty;
+    [ObservableProperty] private string typeFilter = "proxy";
 
     public IAsyncRelayCommand LoadRegionsCommand { get; }
     public IAsyncRelayCommand ImportCommand { get; }
+    public IAsyncRelayCommand SyncAllCommand { get; }
 
     public ImportViewModel()
     {
-        // Resolve via App DI container
+        // Resolve via App.Host DI container
         _client = (ICloudMiniClient)App.HostInstance!.Services.GetRequiredService(typeof(ICloudMiniClient));
         _repo   = (IProxyRepository)App.HostInstance!.Services.GetRequiredService(typeof(IProxyRepository));
         _secure = (ISecureStorage)App.HostInstance!.Services.GetRequiredService(typeof(ISecureStorage));
 
         LoadRegionsCommand = new AsyncRelayCommand(LoadRegionsAsync);
         ImportCommand = new AsyncRelayCommand(ImportAsync, CanImport);
+        SyncAllCommand = new AsyncRelayCommand(SyncAllAsync);
     }
 
     private bool CanImport() => SelectedRegion is not null && Quantity > 0 && !string.IsNullOrWhiteSpace(Token);
@@ -69,5 +72,31 @@ public partial class ImportViewModel : ObservableObject
             if (ProxyParser.TryParse(s, out var r)) records.Add(r);
         }
         await _repo.UpsertProxiesAsync(records);
+    }
+
+    private async Task SyncAllAsync()
+    {
+        try
+        {
+            var tk = Token;
+            await _secure.SaveTokenAsync(tk);
+            if (string.IsNullOrWhiteSpace(TypeFilter))
+            {
+                System.Windows.MessageBox.Show("Nhập type filter, ví dụ: proxy");
+                return;
+            }
+            var raws = await _client.GetAllProxiesByTypeAsync(tk, TypeFilter.Trim(), Quantity, CancellationToken.None);
+            var records = new List<ProxyRecord>();
+            foreach (var s in raws)
+            {
+                if (ProxyParser.TryParse(s, out var r)) records.Add(r);
+            }
+            await _repo.UpsertProxiesAsync(records);
+            System.Windows.MessageBox.Show($"Đã sync {records.Count} proxy.");
+        }
+        catch (HttpRequestException ex)
+        {
+            System.Windows.MessageBox.Show(ex.Message, "Sync ALL failed");
+        }
     }
 }

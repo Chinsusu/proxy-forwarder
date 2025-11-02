@@ -126,4 +126,106 @@ public sealed class CloudMiniClient : ICloudMiniClient
             return arr.EnumerateArray().Select(x => x.GetString() ?? string.Empty).Where(s2 => !string.IsNullOrWhiteSpace(s2)).ToList();
         return Array.Empty<string>();
     }
+
+    public async Task<IReadOnlyList<string>> GetAllProxiesByTypeAsync(string token, string type, int maxCount, CancellationToken ct)
+    {
+        var s = _settings.Current;
+        int page = 1, imported = 0;
+        int limit = Math.Max(1, s.AllProxiesPageSize);
+        var result = new List<string>(capacity: Math.Max(limit, maxCount));
+
+        string F(int p, int off) =>
+            s.AllProxiesPath.Replace("{type}", Uri.EscapeDataString(type))
+                            .Replace("{page}", p.ToString())
+                            .Replace("{limit}", limit.ToString())
+                            .Replace("{offset}", off.ToString());
+        string[] candidates(int p) => new[]
+        {
+            F(p, (p-1)*limit),
+            $"proxies?type={Uri.EscapeDataString(type)}&page={p}&limit={limit}",
+            $"proxies?type={Uri.EscapeDataString(type)}&limit={limit}&offset={(p-1)*limit}",
+            $"proxy/list?type={Uri.EscapeDataString(type)}&page={p}&size={limit}",
+            $"proxy?type={Uri.EscapeDataString(type)}&page={p}&limit={limit}",
+            $"proxies?page={p}&limit={limit}"
+        };
+
+        while (imported < maxCount)
+        {
+            using var res = await TryGetAsync(candidates(page), token, ct);
+            if (!res.IsSuccessStatusCode)
+            {
+                if (page == 1)
+                {
+                    var tried = string.Join(", ", candidates(page).Select(pth => new Uri(_http.BaseAddress!, pth)));
+                    throw new HttpRequestException($"All-proxies endpoint failed (HTTP {(int)res.StatusCode}). Tried: {tried}", null, res.StatusCode);
+                }
+                break;
+            }
+            var payload = await res.Content.ReadAsStringAsync(ct);
+            var pageItems = ParseProxiesFlexible(payload);
+            if (pageItems.Count == 0) break;
+            foreach (var sItem in pageItems)
+            {
+                result.Add(sItem);
+                imported++;
+                if (imported >= maxCount) break;
+            }
+            if (pageItems.Count < limit) break;
+            page++;
+        }
+        return result;
+    }
+
+    private static List<string> ParseProxiesFlexible(string payload)
+    {
+        if (!payload.TrimStart().StartsWith("[") && !payload.TrimStart().StartsWith("{"))
+        {
+            return payload.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                          .Select(s => s.Trim()).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+        }
+        var list = new List<string>();
+        using var doc = JsonDocument.Parse(payload);
+        void PushIf(string? s) { if (!string.IsNullOrWhiteSpace(s)) list.Add(s!); }
+        string JoinObj(JsonElement o)
+        {
+            string host = o.TryGetProperty("host", out var h) ? h.GetString() ?? "" :
+                          o.TryGetProperty("ip", out h) ? h.GetString() ?? "" :
+                          o.TryGetProperty("address", out h) ? h.GetString() ?? "" : "";
+            int port = o.TryGetProperty("port", out var p) && p.TryGetInt32(out var pi) ? pi : 0;
+            string? user = o.TryGetProperty("user", out var u) ? u.GetString() :
+                           o.TryGetProperty("username", out u) ? u.GetString() :
+                           o.TryGetProperty("login", out u) ? u.GetString() : null;
+            string? pass = o.TryGetProperty("pass", out var pw) ? pw.GetString() :
+                           o.TryGetProperty("password", out pw) ? pw.GetString() :
+                           o.TryGetProperty("pwd", out pw) ? pw.GetString() : null;
+            if (string.IsNullOrWhiteSpace(host) || port == 0) return "";
+            return (user is null || pass is null) ? $"{host}:{port}" : $"{host}:{port}:{user}:{pass}";
+        }
+        if (doc.RootElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var el in doc.RootElement.EnumerateArray())
+                PushIf(el.ValueKind == JsonValueKind.String ? el.GetString() : JoinObj(el));
+            return list;
+        }
+        static bool TryGetArray(JsonElement root, out JsonElement arr)
+        {
+            string[] keys = ["items","proxies","result","records","data","list"];
+            foreach (var k in keys)
+            {
+                if (root.TryGetProperty(k, out arr))
+                {
+                    if (arr.ValueKind == JsonValueKind.Array) return true;
+                    if (arr.ValueKind == JsonValueKind.Object && arr.TryGetProperty("items", out var arr2) && arr2.ValueKind == JsonValueKind.Array)
+                    { arr = arr2; return true; }
+                }
+            }
+            arr = default; return false;
+        }
+        if (TryGetArray(doc.RootElement, out var a))
+        {
+            foreach (var el in a.EnumerateArray())
+                PushIf(el.ValueKind == JsonValueKind.String ? el.GetString() : JoinObj(el));
+        }
+        return list;
+    }
 }

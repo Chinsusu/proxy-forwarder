@@ -9,4 +9,6 @@ public interface ICloudMiniClient
 {
     Task<IReadOnlyList<Region>> GetRegionsAsync(string token, CancellationToken ct);
     Task<IReadOnlyList<string>> GetProxiesRawAsync(string token, string regionCode, int count, CancellationToken ct);
+    /// <summary>Sync all proxies by type (e.g. "proxy") with paging until maxCount or exhausted.</summary>
+    Task<IReadOnlyList<string>> GetAllProxiesByTypeAsync(string token, string type, int maxCount, CancellationToken ct);
 }

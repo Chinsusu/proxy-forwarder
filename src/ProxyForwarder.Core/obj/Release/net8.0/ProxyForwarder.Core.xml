@@ -4,5 +4,8 @@
         <name>ProxyForwarder.Core</name>
     </assembly>
     <members>
+        <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAllProxiesByTypeAsync(System.String,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>Sync all proxies by type (e.g. "proxy") with paging until maxCount or exhausted.</summary>
+        </member>
     </members>
 </doc>

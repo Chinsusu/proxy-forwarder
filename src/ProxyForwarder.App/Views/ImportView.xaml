@@ -13,10 +13,12 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="CloudMini API Token" FontWeight="SemiBold"/>
         <PasswordBox Grid.Row="1" x:Name="TokenBox" PasswordChar="•" PasswordChanged="PasswordBox_PasswordChanged"/>
-        <TextBlock Grid.Row="2" Text="Chọn Region" Margin="0,16,0,4"/>
+        <TextBlock Grid.Row="2" Text="Chọn Region (hoặc để trống nếu sync theo type)" Margin="0,16,0,4"/>
         <StackPanel Grid.Row="3" Orientation="Horizontal" >
             <ComboBox Width="400" ItemsSource="{Binding Regions}" SelectedItem="{Binding SelectedRegion}" DisplayMemberPath="Name"/>
             <Button Margin="8,0,0,0" Content="Load Regions" Command="{Binding LoadRegionsCommand}" />
@@ -25,5 +27,10 @@
         <TextBox Grid.Row="5" Width="120" Text="{Binding Quantity}"/>
         <Button Grid.Row="6" Grid.ColumnSpan="2" Height="48" Margin="0,20,0,0"
                 Content="Nhập Proxy Vào Danh Sách" Command="{Binding ImportCommand}" Style="{StaticResource PrimaryButton}"/>
+        <Separator Grid.Row="7" Margin="0,24,0,16"/>
+        <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0,8,0,0">
+            <TextBox Width="220" Text="{Binding TypeFilter}" ToolTip="vd: proxy" />
+            <Button Margin="8,0,0,0" Content="Sync ALL by type" Command="{Binding SyncAllCommand}" Style="{StaticResource PrimaryButton}" />
+        </StackPanel>
     </Grid>
 </UserControl>
