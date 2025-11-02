@@ -221,3 +221,4 @@ C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\R
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\Release\net8.0\ProxyForwarder.Tests.pdb
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\Release\net8.0\ProxyForwarder.Tests.genruntimeconfig.cache
 C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\obj\Release\net8.0\ref\ProxyForwarder.Tests.dll
+C:\Users\Admin\Documents\proxy-forwarder-skeleton\src\ProxyForwarder.Tests\bin\Release\net8.0\Microsoft.Extensions.Logging.Debug.dll

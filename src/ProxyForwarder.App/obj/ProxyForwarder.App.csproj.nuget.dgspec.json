@@ -214,6 +214,10 @@
               "target": "Package",
               "version": "[8.0.6, )"
             },
+            "Microsoft.Extensions.Logging.Debug": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Polly": {
               "target": "Package",
               "version": "[8.4.0, )"
@@ -258,11 +262,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.415/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
         }
       }
     },
@@ -322,6 +321,10 @@
               "target": "Package",
               "version": "[8.0.6, )"
             },
+            "Microsoft.Extensions.Logging.Debug": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Polly": {
               "target": "Package",
               "version": "[8.4.0, )"
@@ -366,11 +369,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.415/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
         }
       }
     },
@@ -430,6 +428,10 @@
               "target": "Package",
               "version": "[8.0.6, )"
             },
+            "Microsoft.Extensions.Logging.Debug": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Polly": {
               "target": "Package",
               "version": "[8.4.0, )"
@@ -478,11 +480,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.415/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
         }
       }
     }

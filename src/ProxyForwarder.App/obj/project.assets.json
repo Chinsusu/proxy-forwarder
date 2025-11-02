@@ -1802,6 +1802,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "Serilog.Extensions.Hosting": "8.0.0",
           "Serilog.Sinks.File": "5.0.0",
@@ -1820,6 +1821,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "ProxyForwarder.Core": "1.0.0",
           "Serilog.Extensions.Hosting": "8.0.0",
@@ -1839,6 +1841,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "ProxyForwarder.Core": "1.0.0",
           "Serilog.Extensions.Hosting": "8.0.0",
@@ -3527,6 +3530,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "Serilog.Extensions.Hosting": "8.0.0",
           "Serilog.Sinks.File": "5.0.0",
@@ -3545,6 +3549,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "ProxyForwarder.Core": "1.0.0",
           "Serilog.Extensions.Hosting": "8.0.0",
@@ -3564,6 +3569,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "ProxyForwarder.Core": "1.0.0",
           "Serilog.Extensions.Hosting": "8.0.0",
@@ -5252,6 +5258,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "Serilog.Extensions.Hosting": "8.0.0",
           "Serilog.Sinks.File": "5.0.0",
@@ -5270,6 +5277,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "ProxyForwarder.Core": "1.0.0",
           "Serilog.Extensions.Hosting": "8.0.0",
@@ -5289,6 +5297,7 @@
         "dependencies": {
           "CommunityToolkit.Mvvm": "8.2.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "8.0.6",
+          "Microsoft.Extensions.Logging.Debug": "8.0.0",
           "Polly": "8.4.0",
           "ProxyForwarder.Core": "1.0.0",
           "Serilog.Extensions.Hosting": "8.0.0",
