@@ -1,6 +1,6 @@
 {
   "apiBaseUrl": "https://client.cloudmini.net/api/v2/",
-  "portRangeMin": 12000,
+  "portRangeMin": 10000,
   "portRangeMax": 14999,
   "autoStartForwarders": false,
   "interceptHttps": false,

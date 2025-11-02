@@ -21,6 +21,8 @@ public partial class ProxiesViewModel : ObservableObject
     private Timer? _pingTimer;
 
     [ObservableProperty] private ObservableCollection<ProxyRecord> items = new();
+    [ObservableProperty] private string filterText = "";
+    [ObservableProperty] private ObservableCollection<ProxyRecord> filteredItems = new();
 
     public IAsyncRelayCommand RefreshCommand { get; }
     public IAsyncRelayCommand PingCommand { get; }
@@ -46,8 +48,35 @@ public partial class ProxiesViewModel : ObservableObject
         // Load proxies from in-memory storage (NotificationService)
         var all = _notifications.GetProxies();
         Items = new ObservableCollection<ProxyRecord>(all);
+        ApplyFilter();
         // Auto-populate ISP after refresh
         await PopulateIspAsync();
+    }
+    
+    partial void OnFilterTextChanged(string value)
+    {
+        ApplyFilter();
+    }
+    
+    private void ApplyFilter()
+    {
+        if (string.IsNullOrWhiteSpace(FilterText))
+        {
+            FilteredItems = new ObservableCollection<ProxyRecord>(Items);
+        }
+        else
+        {
+            var filter = FilterText.ToLower();
+            var filtered = Items.Where(p => 
+                p.Host.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                p.Port.ToString().Contains(filter) ||
+                (p.ISP?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (p.City?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (p.Country?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (p.ExitIp?.Contains(filter) ?? false)
+            ).ToList();
+            FilteredItems = new ObservableCollection<ProxyRecord>(filtered);
+        }
     }
 
     private async Task PingAllAsync()
