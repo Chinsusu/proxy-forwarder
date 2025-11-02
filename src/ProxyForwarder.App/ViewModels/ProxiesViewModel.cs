@@ -106,7 +106,12 @@ public partial class ProxiesViewModel : ObservableObject
             {
                 try
                 {
-                    sb.AppendLine($"  Fetching ISP for {p.Host}:{p.Port}...");
+                    sb.AppendLine($"  Fetching ISP and Ping for {p.Host}:{p.Port}...");
+                    
+                    // Measure latency
+                    var ms = await _probe.ProbeAsync(p.Host, p.Port, p.Username, p.Password, 8000, cts.Token);
+                    p.Ping = ms is null ? null : (int?)ms.Value;
+                    sb.AppendLine($"    Ping: {p.Ping}ms");
                     
                     // Get ISP/Location/ExitIP from ipwho.is through proxy
                     var whoisInfo = await _whois.GetIpInfoAsync(p.Host, p.Port, p.Username, p.Password, cts.Token);
@@ -125,7 +130,7 @@ public partial class ProxiesViewModel : ObservableObject
                             if (!string.IsNullOrWhiteSpace(whoisInfo.Country)) loc.Add(whoisInfo.Country);
                             p.Location = string.Join(" - ", loc);
                         }
-                        sb.AppendLine($"    Updated: ISP={p.ISP}, ExitIP={p.ExitIp}, Location={p.Location}");
+                        sb.AppendLine($"    Updated: Ping={p.Ping}ms, ISP={p.ISP}, ExitIP={p.ExitIp}, Location={p.Location}");
                     }
                     else
                     {
