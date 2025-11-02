@@ -2,11 +2,11 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel Margin="20">
-        <TextBlock Text="Port Range (min - max)" FontWeight="SemiBold"/>
-        <StackPanel Orientation="Horizontal" Margin="0,8,0,20">
-            <TextBox Width="140" Height="32" Padding="8" Text="{Binding PortRangeMin}" Margin="0,0,8,0"/>
+        <TextBlock Text="Port Range (min - max)" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+            <TextBox Width="140" Height="32" Padding="8" Text="{Binding PortRangeMin}" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
             <TextBlock Text="→" VerticalAlignment="Center" Margin="0,0,8,0"/>
-            <TextBox Width="140" Height="32" Padding="8" Text="{Binding PortRangeMax}"/>
+            <TextBox Width="140" Height="32" Padding="8" Text="{Binding PortRangeMax}" VerticalContentAlignment="Center"/>
         </StackPanel>
 
         <CheckBox Content="Auto start forwarders on launch" IsChecked="{Binding AutoStartForwarders}" Margin="0,0,0,20" VerticalAlignment="Center"/>

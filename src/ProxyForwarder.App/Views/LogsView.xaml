@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel Margin="10">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,6">
-            <Button Content="Open logs folder" Command="{Binding OpenFolderCommand}" />
-            <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
+            <Button Content="Open Logs Folder" Command="{Binding OpenFolderCommand}" Style="{StaticResource PrimaryButton}" Height="36" Margin="0,0,8,0"/>
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource PrimaryButton}" Height="36"/>
         </StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <TextBox Text="{Binding Text}" IsReadOnly="True" TextWrapping="Wrap"
