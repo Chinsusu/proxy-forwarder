@@ -183,27 +183,43 @@ public sealed class CloudMiniClient : ICloudMiniClient
         var list = new List<string>();
         using var doc = JsonDocument.Parse(payload);
         void PushIf(string? s) { if (!string.IsNullOrWhiteSpace(s)) list.Add(s!); }
+        
+        // Build proxy string from object with multiple port options (https, socks, http, port)
         string JoinObj(JsonElement o)
         {
             string host = o.TryGetProperty("host", out var h) ? h.GetString() ?? "" :
                           o.TryGetProperty("ip", out h) ? h.GetString() ?? "" :
                           o.TryGetProperty("address", out h) ? h.GetString() ?? "" : "";
-            int port = o.TryGetProperty("port", out var p) && p.TryGetInt32(out var pi) ? pi : 0;
+            
+            // Try ports in order: https, socks, http, port
+            int port = 0;
+            if (o.TryGetProperty("https", out var https_p) && https_p.TryGetInt32(out var https_pi))
+                port = https_pi;
+            else if (o.TryGetProperty("socks", out var socks_p) && socks_p.TryGetInt32(out var socks_pi))
+                port = socks_pi;
+            else if (o.TryGetProperty("http", out var http_p) && http_p.TryGetInt32(out var http_pi))
+                port = http_pi;
+            else if (o.TryGetProperty("port", out var p) && p.TryGetInt32(out var pi))
+                port = pi;
+            
             string? user = o.TryGetProperty("user", out var u) ? u.GetString() :
                            o.TryGetProperty("username", out u) ? u.GetString() :
                            o.TryGetProperty("login", out u) ? u.GetString() : null;
             string? pass = o.TryGetProperty("pass", out var pw) ? pw.GetString() :
                            o.TryGetProperty("password", out pw) ? pw.GetString() :
                            o.TryGetProperty("pwd", out pw) ? pw.GetString() : null;
+            
             if (string.IsNullOrWhiteSpace(host) || port == 0) return "";
             return (user is null || pass is null) ? $"{host}:{port}" : $"{host}:{port}:{user}:{pass}";
         }
+        
         if (doc.RootElement.ValueKind == JsonValueKind.Array)
         {
             foreach (var el in doc.RootElement.EnumerateArray())
                 PushIf(el.ValueKind == JsonValueKind.String ? el.GetString() : JoinObj(el));
             return list;
         }
+        
         static bool TryGetArray(JsonElement root, out JsonElement arr)
         {
             string[] keys = ["items","proxies","result","records","data","list"];
