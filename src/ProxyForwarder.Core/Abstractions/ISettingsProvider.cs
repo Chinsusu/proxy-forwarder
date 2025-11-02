@@ -26,4 +26,5 @@ public sealed class AppSettings
     // placeholders: {page} {limit} {offset} (optional if server adds pagination later)
     public string AllProxiesPath { get; set; } = "proxy";
     public int AllProxiesPageSize { get; set; } = 500;
+    public int MaxProxiesPerSync { get; set; } = 10000;
 }

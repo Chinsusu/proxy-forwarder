@@ -19,6 +19,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string authScheme = "";
     [ObservableProperty] private string allProxiesPath = "";
     [ObservableProperty] private int allProxiesPageSize;
+    [ObservableProperty] private int maxProxiesPerSync;
 
     public IAsyncRelayCommand SaveCommand { get; }
 
@@ -35,6 +36,7 @@ public partial class SettingsViewModel : ObservableObject
         AuthScheme = _settings.Current.AuthScheme;
         AllProxiesPath = _settings.Current.AllProxiesPath;
         AllProxiesPageSize = _settings.Current.AllProxiesPageSize;
+        MaxProxiesPerSync = _settings.Current.MaxProxiesPerSync;
         SaveCommand = new AsyncRelayCommand(SaveAsync);
     }
 
@@ -50,6 +52,7 @@ public partial class SettingsViewModel : ObservableObject
         _settings.Current.AuthScheme = AuthScheme;
         _settings.Current.AllProxiesPath = AllProxiesPath;
         _settings.Current.AllProxiesPageSize = AllProxiesPageSize;
+        _settings.Current.MaxProxiesPerSync = MaxProxiesPerSync;
         await _settings.SaveAsync();
     }
 }

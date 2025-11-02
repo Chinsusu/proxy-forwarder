@@ -85,7 +85,8 @@ public partial class ImportViewModel : ObservableObject
                 System.Windows.MessageBox.Show("Nhập type filter, ví dụ: proxy");
                 return;
             }
-            var raws = await _client.GetAllProxiesByTypeAsync(tk, TypeFilter.Trim(), Quantity, CancellationToken.None);
+            var settings = (ISettingsProvider)App.HostInstance!.Services.GetRequiredService(typeof(ISettingsProvider));
+            var raws = await _client.GetAllProxiesByTypeAsync(tk, TypeFilter.Trim(), settings.Current.MaxProxiesPerSync, CancellationToken.None);
             var records = new List<ProxyRecord>();
             foreach (var s in raws)
             {

@@ -167,6 +167,8 @@ public sealed class CloudMiniClient : ICloudMiniClient
                 imported++;
                 if (imported >= maxCount) break;
             }
+            if (imported >= maxCount) break;
+            // If got fewer items than limit, likely no more pages
             if (pageItems.Count < limit) break;
             page++;
         }

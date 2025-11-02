@@ -18,6 +18,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="API Base URL"/>
         <TextBox Grid.Row="1" Text="{Binding ApiBaseUrl}"/>
@@ -36,20 +38,25 @@
             <TextBox Width="80" Text="{Binding AllProxiesPageSize}"/>
         </StackPanel>
 
-        <TextBlock Grid.Row="9" Text="Auth header / scheme" Margin="0,8,0,0"/>
-        <StackPanel Grid.Row="10" Orientation="Horizontal" Margin="0,0,0,0">
+        <StackPanel Grid.Row="9" Orientation="Horizontal" Margin="0,8,0,0">
+            <TextBlock Text="Max proxies per sync" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox Width="80" Text="{Binding MaxProxiesPerSync}" ToolTip="Maximum proxies to fetch in sync-all operation"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="10" Text="Auth header / scheme" Margin="0,8,0,0"/>
+        <StackPanel Grid.Row="11" Orientation="Horizontal" Margin="0,0,0,0">
             <TextBox Width="180" Text="{Binding AuthHeader}" ToolTip="Authorization hoac X-API-Key" Margin="0,0,8,0"/>
             <TextBox Width="180" Text="{Binding AuthScheme}" ToolTip="Bearer hoac de trong"/>
         </StackPanel>
 
-        <TextBlock Grid.Row="11" Text="Port Range (min - max)" Margin="0,8,0,0"/>
-        <StackPanel Grid.Row="12" Orientation="Horizontal" Margin="0,0,0,0">
+        <TextBlock Grid.Row="12" Text="Port Range (min - max)" Margin="0,8,0,0"/>
+        <StackPanel Grid.Row="13" Orientation="Horizontal" Margin="0,0,0,0">
             <TextBox Width="120" Text="{Binding PortRangeMin}" Margin="0,0,8,0"/>
             <TextBlock Text="→" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Width="120" Text="{Binding PortRangeMax}"/>
         </StackPanel>
 
-        <CheckBox Grid.Row="13" Content="Auto start forwarders on launch" IsChecked="{Binding AutoStartForwarders}" Margin="0,8,0,0"/>
-        <Button Grid.Row="14" Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Margin="0,12,0,0" Width="120"/>
+        <CheckBox Grid.Row="14" Content="Auto start forwarders on launch" IsChecked="{Binding AutoStartForwarders}" Margin="0,8,0,0"/>
+        <Button Grid.Row="15" Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Margin="0,12,0,0" Width="120"/>
     </Grid>
 </UserControl>
