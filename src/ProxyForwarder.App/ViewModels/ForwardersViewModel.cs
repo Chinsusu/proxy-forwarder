@@ -34,6 +34,9 @@ public partial class ForwardersViewModel : ObservableObject
 
         // Subscribe to proxies synced event to reload forwarders
         _notifications.ProxiesSynced += async (_, _) => await LoadAsync();
+        
+        // Load initial proxies if available
+        _ = LoadAsync();
     }
 
     private async Task LoadAsync()
