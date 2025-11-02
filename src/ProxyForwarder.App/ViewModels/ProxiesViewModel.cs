@@ -105,42 +105,41 @@ public partial class ProxiesViewModel : ObservableObject
 
         try
         {
-            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-        var tasks = list.Select(async p =>
-        {
-            await _sem.WaitAsync(cts.Token);
-            try
+            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+            
+            // Process proxies sequentially (not parallel) to avoid rate limiting
+            foreach (var p in list)
             {
-                // Get ISP/Location/ExitIP from ipwho.is through proxy
-                var whoisInfo = await _whois.GetIpInfoAsync(p.Host, p.Port, p.Username, p.Password, cts.Token);
-                System.Diagnostics.Debug.WriteLine($"[PopulateIspAsync] {p.Host}:{p.Port} -> ISP={whoisInfo?.Isp}, ExitIp={whoisInfo?.Ip}");
-                if (whoisInfo is not null)
+                try
                 {
-                    p.ExitIp = whoisInfo.Ip;
-                    p.ISP = whoisInfo.Isp ?? whoisInfo.Organization;
-                    if (!string.IsNullOrWhiteSpace(whoisInfo.Country) || !string.IsNullOrWhiteSpace(whoisInfo.City))
+                    // Get ISP/Location/ExitIP from ipwho.is through proxy
+                    var whoisInfo = await _whois.GetIpInfoAsync(p.Host, p.Port, p.Username, p.Password, cts.Token);
+                    System.Diagnostics.Debug.WriteLine($"[PopulateIspAsync] {p.Host}:{p.Port} -> ISP={whoisInfo?.Isp}, ExitIp={whoisInfo?.Ip}");
+                    if (whoisInfo is not null)
                     {
-                        var loc = new List<string>();
-                        if (!string.IsNullOrWhiteSpace(whoisInfo.City)) loc.Add(whoisInfo.City);
-                        if (!string.IsNullOrWhiteSpace(whoisInfo.Country)) loc.Add(whoisInfo.Country);
-                        p.Location = string.Join(" - ", loc);
+                        p.ExitIp = whoisInfo.Ip;
+                        p.ISP = whoisInfo.Isp ?? whoisInfo.Organization;
+                        if (!string.IsNullOrWhiteSpace(whoisInfo.Country) || !string.IsNullOrWhiteSpace(whoisInfo.City))
+                        {
+                            var loc = new List<string>();
+                            if (!string.IsNullOrWhiteSpace(whoisInfo.City)) loc.Add(whoisInfo.City);
+                            if (!string.IsNullOrWhiteSpace(whoisInfo.Country)) loc.Add(whoisInfo.Country);
+                            p.Location = string.Join(" - ", loc);
+                        }
+                    }
+
+                    // Force DataGrid refresh
+                    var idx = Items.IndexOf(p);
+                    if (idx >= 0)
+                    {
+                        await App.Current!.Dispatcher.InvokeAsync(() =>
+                        {
+                            Items[idx] = Items[idx];
+                        });
                     }
                 }
-
-                // Force DataGrid refresh
-                var idx = Items.IndexOf(p);
-                if (idx >= 0)
-                {
-                    await App.Current!.Dispatcher.InvokeAsync(() =>
-                    {
-                        Items[idx] = Items[idx];
-                    });
-                }
+                catch { /* ignore per-item errors */ }
             }
-            catch { /* ignore per-item errors */ }
-            finally { _sem.Release(); }
-        });
-        await Task.WhenAll(tasks);
 
             // Save all updated proxies to database
             try
