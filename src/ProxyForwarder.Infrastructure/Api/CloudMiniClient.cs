@@ -191,16 +191,26 @@ public sealed class CloudMiniClient : ICloudMiniClient
                           o.TryGetProperty("ip", out h) ? h.GetString() ?? "" :
                           o.TryGetProperty("address", out h) ? h.GetString() ?? "" : "";
             
+            // Helper to get port (may be int or string)
+            static string GetPort(JsonElement el)
+            {
+                if (el.ValueKind == JsonValueKind.Number && el.TryGetInt32(out var pi))
+                    return pi.ToString();
+                if (el.ValueKind == JsonValueKind.String)
+                    return el.GetString() ?? "";
+                return "";
+            }
+            
             // Try ports in order: https, socks, http, port
-            int port = 0;
-            if (o.TryGetProperty("https", out var https_p) && https_p.TryGetInt32(out var https_pi))
-                port = https_pi;
-            else if (o.TryGetProperty("socks", out var socks_p) && socks_p.TryGetInt32(out var socks_pi))
-                port = socks_pi;
-            else if (o.TryGetProperty("http", out var http_p) && http_p.TryGetInt32(out var http_pi))
-                port = http_pi;
-            else if (o.TryGetProperty("port", out var p) && p.TryGetInt32(out var pi))
-                port = pi;
+            string port = "";
+            if (o.TryGetProperty("https", out var https_p))
+                port = GetPort(https_p);
+            if (string.IsNullOrWhiteSpace(port) && o.TryGetProperty("socks", out var socks_p))
+                port = GetPort(socks_p);
+            if (string.IsNullOrWhiteSpace(port) && o.TryGetProperty("http", out var http_p))
+                port = GetPort(http_p);
+            if (string.IsNullOrWhiteSpace(port) && o.TryGetProperty("port", out var p))
+                port = GetPort(p);
             
             string? user = o.TryGetProperty("user", out var u) ? u.GetString() :
                            o.TryGetProperty("username", out u) ? u.GetString() :
@@ -209,7 +219,7 @@ public sealed class CloudMiniClient : ICloudMiniClient
                            o.TryGetProperty("password", out pw) ? pw.GetString() :
                            o.TryGetProperty("pwd", out pw) ? pw.GetString() : null;
             
-            if (string.IsNullOrWhiteSpace(host) || port == 0) return "";
+            if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(port)) return "";
             return (user is null || pass is null) ? $"{host}:{port}" : $"{host}:{port}:{user}:{pass}";
         }
         
