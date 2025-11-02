@@ -78,16 +78,6 @@ public partial class ProxiesViewModel : ObservableObject
                         p.Location = string.Join(" - ", loc);
                     }
                 }
-                
-                // Force DataGrid refresh
-                var idx = Items.IndexOf(p);
-                if (idx >= 0)
-                {
-                    await App.Current!.Dispatcher.InvokeAsync(() =>
-                    {
-                        Items[idx] = Items[idx];
-                    });
-                }
             }
             catch { /* ignore per-item errors */ }
             finally { _sem.Release(); }
@@ -140,16 +130,6 @@ public partial class ProxiesViewModel : ObservableObject
                     else
                     {
                         sb.AppendLine($"    Response: null (no data)");
-                    }
-
-                    // Force DataGrid refresh
-                    var idx = Items.IndexOf(p);
-                    if (idx >= 0)
-                    {
-                        await App.Current!.Dispatcher.InvokeAsync(() =>
-                        {
-                            Items[idx] = Items[idx];
-                        });
                     }
                 }
                 catch (Exception ex)

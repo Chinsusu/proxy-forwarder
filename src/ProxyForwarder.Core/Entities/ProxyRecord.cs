@@ -12,14 +12,19 @@ public sealed class ProxyRecord : INotifyPropertyChanged
     public string? Username { get; set; }
     public string? Password { get; set; }
     public string Provider { get; set; } = "CloudMini";
-    public string? Location { get; set; } // Location/Region from proxy provider
+    private string? _location; // Location/Region from proxy provider
+    public string? Location { get => _location; set { _location = value; OnPropertyChanged(); } }
+    
     public string? Type { get; set; } // PrivateV4, PrivateV6, Residential, ResidentialStatic, BudgetV4, etc.
-    public string? ISP { get; set; } // Internet Service Provider
+    
+    private string? _isp; // Internet Service Provider
+    public string? ISP { get => _isp; set { _isp = value; OnPropertyChanged(); } }
     
     private int? _ping; // Ping latency in milliseconds (notify so DataGrid refreshes)
     public int? Ping { get => _ping; set { _ping = value; OnPropertyChanged(); } }
     
-    public string? ExitIp { get; set; } // Exit IP from ipwho.is response
+    private string? _exitIp; // Exit IP from ipwho.is response
+    public string? ExitIp { get => _exitIp; set { _exitIp = value; OnPropertyChanged(); } }
     
     public DateTime ImportedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? ExpirationDate { get; set; } // When the proxy expires
