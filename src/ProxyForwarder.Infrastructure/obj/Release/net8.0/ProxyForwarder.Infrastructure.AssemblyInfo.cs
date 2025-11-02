@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProxyForwarder.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a6c3303a8f25fe13854e65bcf630a6b3c79cee7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b085f5802e8751f3b796e67b9940c1d361573324")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProxyForwarder.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProxyForwarder.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

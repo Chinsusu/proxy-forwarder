@@ -32,8 +32,17 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
 
     public void Start()
     {
-        _listener.Start();
-        _acceptLoop = Task.Run(AcceptLoopAsync);
+        try
+        {
+            _listener.Start();
+            System.Diagnostics.Debug.WriteLine($"[ChainedHttpProxy] Listening on 127.0.0.1:{_listener.LocalEndpoint}");
+            _acceptLoop = Task.Run(AcceptLoopAsync);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[ChainedHttpProxy] Start error: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task StopAsync()
@@ -53,11 +62,13 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
             try
             {
                 client = await _listener.AcceptTcpClientAsync(_cts.Token);
+                System.Diagnostics.Debug.WriteLine($"[ChainedHttpProxy] Client connected");
                 _ = Task.Run(() => HandleClientAsync(client, _cts.Token));
             }
             catch (OperationCanceledException) { break; }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"[ChainedHttpProxy] Accept error: {ex.Message}");
                 client?.Dispose();
             }
         }
@@ -118,8 +129,10 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
     private async Task HandleClientAsync(TcpClient client, CancellationToken ct)
     {
         using var c = client;
-        c.NoDelay = true;
-        using var cs = c.GetStream();
+        try
+        {
+            c.NoDelay = true;
+            using var cs = c.GetStream();
 
         byte[]? headerBytes = await ReadHeadersAsync(cs, ct);
         if (headerBytes is null) return;
@@ -167,6 +180,11 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
             await ups.WriteAsync(headerBytes, 0, headerBytes.Length, ct);
             await RelayDuplexAsync(cs, ups, ct);
             return;
+        }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[ChainedHttpProxy] Handler error: {ex.Message}");
         }
     }
 
