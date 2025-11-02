@@ -58,6 +58,7 @@ public partial class App : Application
                     var s = sp.GetRequiredService<ISettingsProvider>().Current;
                     return new PortAllocator(s.PortRangeMin, s.PortRangeMax);
                 });
+                services.AddSingleton<IUdpBlocker, ProxyForwarder.Infrastructure.Services.UdpBlocker>();
                 services.AddSingleton<IProxyRepository, ProxyRepository>();
 
                 // Register ViewModels for dependency injection

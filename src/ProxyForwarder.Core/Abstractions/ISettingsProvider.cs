@@ -16,6 +16,8 @@ public sealed class AppSettings
     public bool AutoStartForwarders { get; set; } = false;
     // Không giải mã HTTPS mặc định (không cần cài chứng chỉ root)
     public bool InterceptHttps { get; set; } = false;
+    // Harden browser: block UDP to avoid WebRTC/QUIC leaks (Chrome/Edge/Firefox)
+    public bool BlockUdpForBrowsers { get; set; } = false;
     // API endpoints (configurable)
     public string RegionsPath { get; set; } = "regions";
     // Use {code} and {count} placeholders
@@ -29,4 +31,9 @@ public sealed class AppSettings
     public string AllProxiesPath { get; set; } = "proxy";
     public int AllProxiesPageSize { get; set; } = 500;
     public int MaxProxiesPerSync { get; set; } = 10000;
+}
+
+public interface IUdpBlocker
+{
+    Task ApplyAsync(bool enable, CancellationToken ct = default);
 }

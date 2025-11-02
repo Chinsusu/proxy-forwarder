@@ -9,6 +9,12 @@
             <TextBox Width="140" Height="32" Padding="8" Text="{Binding PortRangeMax}" VerticalContentAlignment="Center"/>
         </StackPanel>
 
+        <TextBlock Text="Block UDP for browsers (WebRTC/QUIC)" FontWeight="SemiBold" Margin="0,12,0,8"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20" VerticalAlignment="Center">
+            <CheckBox Content="Enable UDP block (Chrome/Edge/Firefox)" IsChecked="{Binding BlockUdpForBrowsers}" VerticalAlignment="Center"/>
+            <TextBlock Text="(requires Administrator)" VerticalAlignment="Center" Margin="12,0,0,0" Foreground="Gray"/>
+        </StackPanel>
+
         <CheckBox Content="Auto start forwarders on launch" IsChecked="{Binding AutoStartForwarders}" Margin="0,0,0,20" VerticalAlignment="Center"/>
         <Button Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Height="36" Width="120"/>
     </StackPanel>
