@@ -16,6 +16,8 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
     private readonly string? _proxyAuth;
     private readonly CancellationTokenSource _cts = new();
     private Task? _acceptLoop;
+    private readonly List<Task> _clientTasks = new();
+    private readonly object _taskLock = new();
 
     public ChainedHttpProxy(IPAddress bind, int localPort, string upstreamHost, int upstreamPort, string? user = null, string? pass = null)
     {
@@ -40,7 +42,34 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
     {
         _cts.Cancel();
         try { _listener.Stop(); } catch { }
-        if (_acceptLoop is not null) await _acceptLoop;
+        
+        // Wait for accept loop with timeout
+        if (_acceptLoop is not null)
+        {
+            try
+            {
+                await _acceptLoop.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { }
+            catch { }
+        }
+        
+        // Wait for all client tasks to complete with timeout
+        var timeout = Task.Delay(TimeSpan.FromSeconds(5));
+        List<Task> tasksToWait;
+        lock (_taskLock)
+        {
+            tasksToWait = _clientTasks.ToList();
+        }
+        
+        if (tasksToWait.Count > 0)
+        {
+            try
+            {
+                await Task.WhenAny(Task.WhenAll(tasksToWait), timeout).ConfigureAwait(false);
+            }
+            catch { }
+        }
     }
 
     public async ValueTask DisposeAsync() => await StopAsync();
@@ -53,7 +82,18 @@ public sealed class ChainedHttpProxy : IAsyncDisposable
             try
             {
                 client = await _listener.AcceptTcpClientAsync(_cts.Token);
-                _ = Task.Run(() => HandleClientAsync(client, _cts.Token));
+                var task = HandleClientAsync(client, _cts.Token);
+                lock (_taskLock)
+                {
+                    _clientTasks.Add(task);
+                }
+                _ = task.ContinueWith(t =>
+                {
+                    lock (_taskLock)
+                    {
+                        _clientTasks.Remove(t);
+                    }
+                }, TaskScheduler.Default);
             }
             catch (OperationCanceledException) { break; }
             catch

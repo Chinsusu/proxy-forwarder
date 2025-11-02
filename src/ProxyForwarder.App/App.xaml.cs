@@ -89,8 +89,23 @@ public partial class App : Application
     {
         if (HostInstance is not null)
         {
-            await HostInstance.StopAsync();
-            HostInstance.Dispose();
+            try
+            {
+                // Dispose ForwarderService first to clean up proxy tasks
+                var forwarderService = HostInstance.Services.GetService(typeof(IForwarderService)) as IAsyncDisposable;
+                if (forwarderService is not null)
+                {
+                    await forwarderService.DisposeAsync();
+                }
+            }
+            catch { }
+            
+            try
+            {
+                await HostInstance.StopAsync();
+                HostInstance.Dispose();
+            }
+            catch { }
         }
         base.OnExit(e);
     }
