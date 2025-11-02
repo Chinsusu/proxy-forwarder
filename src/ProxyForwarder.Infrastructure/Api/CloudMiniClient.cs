@@ -175,12 +175,12 @@ public sealed class CloudMiniClient : ICloudMiniClient
         return result;
     }
 
-    public async Task<IReadOnlyList<(string ProxyString, int Price, string? Location)>> GetAllProxiesWithMetadataAsync(string token, string type, int maxCount, CancellationToken ct)
+    public async Task<IReadOnlyList<(string ProxyString, int Price, string? Location, DateTime? ExpirationDate)>> GetAllProxiesWithMetadataAsync(string token, string type, int maxCount, CancellationToken ct)
     {
         var s = _settings.Current;
         int page = 1, imported = 0;
         int limit = Math.Max(1, s.AllProxiesPageSize);
-        var result = new List<(string, int, string?)>(capacity: Math.Max(limit, maxCount));
+        var result = new List<(string, int, string?, DateTime?)>(capacity: Math.Max(limit, maxCount));
 
         string F(int p, int off) =>
             s.AllProxiesPath.Replace("{page}", p.ToString())
@@ -209,9 +209,9 @@ public sealed class CloudMiniClient : ICloudMiniClient
             var payload = await res.Content.ReadAsStringAsync(ct);
             var pageItems = ParseProxiesWithMetadata(payload);
             if (pageItems.Count == 0) break;
-            foreach (var (proxyStr, price, location) in pageItems)
+            foreach (var (proxyStr, price, location, expirationDate) in pageItems)
             {
-                result.Add((proxyStr, price, location));
+                result.Add((proxyStr, price, location, expirationDate));
                 imported++;
                 if (imported >= maxCount) break;
             }
@@ -222,24 +222,25 @@ public sealed class CloudMiniClient : ICloudMiniClient
         return result;
     }
 
-    private static List<(string ProxyString, int Price, string? Location)> ParseProxiesWithMetadata(string payload)
+    private static List<(string ProxyString, int Price, string? Location, DateTime? ExpirationDate)> ParseProxiesWithMetadata(string payload)
     {
-        var list = new List<(string, int, string?)>();
+        var list = new List<(string, int, string?, DateTime?)>();
         
         if (!payload.TrimStart().StartsWith("[") && !payload.TrimStart().StartsWith("{"))
         {
             // Plain text format - no metadata available
             return payload.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(s => s.Trim()).Where(s => !string.IsNullOrWhiteSpace(s))
-                          .Select(s => (s, 0, (string?)null)).ToList();
+                          .Select(s => (s, 0, (string?)null, (DateTime?)null)).ToList();
         }
         
         using var doc = JsonDocument.Parse(payload);
         
-        string JoinObj(JsonElement o, out int price, out string? location)
+        string JoinObj(JsonElement o, out int price, out string? location, out DateTime? expirationDate)
         {
             price = 0;
             location = null;
+            expirationDate = null;
             if (o.TryGetProperty("price", out var p) && p.TryGetInt32(out var priceVal))
                 price = priceVal;
             if (o.TryGetProperty("location", out var l))
@@ -251,6 +252,22 @@ public sealed class CloudMiniClient : ICloudMiniClient
             else if (o.TryGetProperty("area", out l))
                 location = l.GetString();
             
+            // Extract expiration date
+            if (o.TryGetProperty("expired_at", out var exp) && exp.ValueKind == JsonValueKind.String)
+            {
+                if (DateTime.TryParse(exp.GetString(), out var expDate))
+                    expirationDate = expDate;
+            }
+            else if (o.TryGetProperty("expiration_date", out exp) && exp.ValueKind == JsonValueKind.String)
+            {
+                if (DateTime.TryParse(exp.GetString(), out var expDate))
+                    expirationDate = expDate;
+            }
+            else if (o.TryGetProperty("expire_date", out exp) && exp.ValueKind == JsonValueKind.String)
+            {
+                if (DateTime.TryParse(exp.GetString(), out var expDate))
+                    expirationDate = expDate;
+            }
             
             string host = o.TryGetProperty("host", out var h) ? h.GetString() ?? "" :
                           o.TryGetProperty("ip", out h) ? h.GetString() ?? "" :
@@ -293,12 +310,12 @@ public sealed class CloudMiniClient : ICloudMiniClient
                 if (el.ValueKind == JsonValueKind.String)
                 {
                     var s = el.GetString();
-                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0, null));
+                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0, null, null));
                 }
                 else
                 {
-                    var proxy = JoinObj(el, out var price, out var location);
-                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price, location));
+                    var proxy = JoinObj(el, out var price, out var location, out var expirationDate);
+                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price, location, expirationDate));
                 }
             }
             return list;
@@ -327,12 +344,12 @@ public sealed class CloudMiniClient : ICloudMiniClient
                 if (el.ValueKind == JsonValueKind.String)
                 {
                     var s = el.GetString();
-                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0, null));
+                    if (!string.IsNullOrWhiteSpace(s)) list.Add((s, 0, null, null));
                 }
                 else
                 {
-                    var proxy = JoinObj(el, out var price, out var location);
-                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price, location));
+                    var proxy = JoinObj(el, out var price, out var location, out var expirationDate);
+                    if (!string.IsNullOrWhiteSpace(proxy)) list.Add((proxy, price, location, expirationDate));
                 }
             }
         }
