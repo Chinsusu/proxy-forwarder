@@ -29,13 +29,11 @@ public sealed class ForwarderService : IForwarderService, IAsyncDisposable
 
         try
         {
-            // Parse upstream: HOST:PORT[:USER:PASS]
-            var parts = proxy.Host.Split(':');
-            var upHost = parts[0];
-            if (!int.TryParse(parts.Length > 1 ? parts[1] : "80", out var upPort))
-                upPort = 80;
-            var upUser = parts.Length > 2 ? parts[2] : null;
-            var upPass = parts.Length > 3 ? parts[3] : null;
+            // Use ProxyRecord fields: Host, Port, Username, Password
+            var upHost = proxy.Host;
+            var upPort = proxy.Port;
+            var upUser = proxy.Username;
+            var upPass = proxy.Password;
 
             var forwarder = new ChainedHttpProxy(IPAddress.Loopback, localPort, upHost, upPort, upUser, upPass);
             forwarder.Start();
