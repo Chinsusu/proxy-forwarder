@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ProxyForwarder.Core</name>
+    </assembly>
+    <members>
+        <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAllProxiesByTypeAsync(System.String,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>Sync all proxies by type (e.g. "proxy") with paging until maxCount or exhausted.</summary>
+        </member>
+        <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAllProxiesWithMetadataAsync(System.String,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>Sync all proxies with metadata (proxy string + price + location + expiration + ISP) by type.</summary>
+        </member>
+        <member name="M:ProxyForwarder.Core.Abstractions.ICloudMiniClient.GetAccountProxiesAsync(System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Get account proxies from /proxy endpoint with full details (ISP, Location, ExpireDate).</summary>
+        </member>
+        <member name="T:ProxyForwarder.Core.Abstractions.INotificationService">
+            <summary>
+            Simple event-based notification service for ViewModels to communicate
+            </summary>
+        </member>
+        <member name="M:ProxyForwarder.Core.Abstractions.ILatencyProbe.ProbeAsync(System.String,System.Int32,System.String,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Measure latency through upstream HTTP proxy: CONNECT www.google.com:443 (upstream resolves)
+            If CONNECT fails, fallback to GET http://www.google.com/generate_204.
+            Returns milliseconds or null on error/timeout. No local DNS resolution - prevents DNS leak.
+            </summary>
+        </member>
+        <member name="M:ProxyForwarder.Core.Abstractions.IIpWhoisClient.GetIpInfoAsync(System.String,System.Int32,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get IP info from ipwho.is through proxy (ISP, Location, Organization).
+            </summary>
+        </member>
+        <member name="T:ProxyForwarder.Core.Common.ProxyTypeClassifier">
+            <summary>
+            Classifies proxy type based on price (monthly) according to CloudMini pricing
+            </summary>
+        </member>
+        <member name="M:ProxyForwarder.Core.Common.ProxyTypeClassifier.ClassifyByPrice(System.Int32)">
+            <summary>
+            Classify proxy type based on price
+            PrivateV4: 50,000 đ/tháng
+            BudgetV4: 40,000 đ/tháng
+            PrivateV6: 5,000 đ/tháng
+            Residential VN: 120,000 đ/tháng
+            ResidentialStatic: 120,000 đ/tháng
+            BudgetResidentialStatic: 80,000 đ/tháng
+            Other/Unknown: null
+            </summary>
+        </member>
+        <member name="M:ProxyForwarder.Core.Common.ProxyTypeClassifier.GetDisplayName(System.String)">
+            <summary>
+            Get a friendly display name for the proxy type
+            </summary>
+        </member>
+        <member name="P:ProxyForwarder.Core.Entities.ProxyRecord.DaysRemaining">
+            <summary>Get remaining time until expiration (days, hours, or minutes)</summary>
+        </member>
+        <member name="M:ProxyForwarder.Core.Entities.ProxyRecord.GetRemainingTime">
+            <summary>Get remaining time until expiration (formatted as: 1d 2h 5')</summary>
+        </member>
+    </members>
+</doc>
