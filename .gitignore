@@ -1,0 +1,21 @@
+# Build outputs
+**/bin/
+**/obj/
+/.vs/
+
+# Packaging / publish artifacts
+publish/
+CloudMiniProxyForwarder-Package/
+
+# Local databases and secrets
+forwarder.db
+**/token.dat
+
+# Logs and misc
+*.log
+*.user
+*.suo
+*.cache
+.DS_Store
+Thumbs.db
+
