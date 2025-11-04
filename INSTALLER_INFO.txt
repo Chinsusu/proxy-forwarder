@@ -1,0 +1,50 @@
+=====================================
+  PROXY FORWARDER - INSTALLER PACKAGE
+=====================================
+
+PACKAGE INFORMATION:
+- File: ProxyForwarder-Installer.zip
+- Size: ~70 MB
+- Type: Self-contained Windows application (x64)
+- Format: Standalone executable with all dependencies
+
+CONTENTS:
+The ZIP file contains:
+✓ ProxyForwarder.App.exe (main application)
+✓ All .NET 8 runtime libraries (no external dependencies needed)
+✓ Application dependencies (Entity Framework, WPF, etc.)
+✓ INSTALL.bat (installation script)
+✓ README.txt (installation guide)
+
+HOW TO USE ON ANOTHER MACHINE:
+
+1. Copy ProxyForwarder-Installer.zip to the target machine
+2. Extract the ZIP file to any folder
+3. Navigate to the extracted folder
+4. Right-click INSTALL.bat and select "Run as Administrator"
+5. Follow the installation wizard
+6. Application will be installed to: C:\Program Files\ProxyForwarder
+
+SYSTEM REQUIREMENTS:
+- Windows 10 or Windows 11 (64-bit)
+- Administrator access for installation
+- No additional software needed (all dependencies included)
+
+INSTALLATION CREATES:
+- Application directory: C:\Program Files\ProxyForwarder
+- Start Menu shortcut: Start Menu > Programs > ProxyForwarder
+- Desktop shortcut (optional)
+
+UNINSTALLATION:
+Simply delete:
+1. C:\Program Files\ProxyForwarder folder
+2. Start Menu shortcuts (if desired)
+3. Desktop shortcut (if created)
+
+NOTES:
+- The application includes .NET 8 runtime, so the target machine doesn't need 
+  .NET pre-installed
+- All proxy credentials are stored securely using Windows Credential Manager
+- The application is Windows-only (WPF-based GUI)
+
+For detailed installation instructions, see README.txt inside the ZIP file.

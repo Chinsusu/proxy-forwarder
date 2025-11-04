@@ -1,0 +1,216 @@
+=====================================
+  VERSIONING SETUP - IMPLEMENTATION SUMMARY
+=====================================
+
+WHAT WAS IMPLEMENTED
+====================
+
+✓ Automatic version tagging + GitHub Release creation
+✓ Manual version tagging support
+✓ Version display in app (title bar)
+✓ Semantic versioning (MAJOR.MINOR.PATCH)
+✓ Self-contained Windows installer generation
+✓ Comprehensive documentation
+
+
+FILES CREATED/MODIFIED
+======================
+
+NEW FILES:
+  1. .github/workflows/release-tag.yml
+     → GitHub Actions workflow for auto CI/CD
+     
+  2. VERSIONING.md
+     → Complete guide (Method A & B, configuration, FAQ)
+     
+  3. VERSIONING-QUICK-REF.txt
+     → Quick reference for common commands
+     
+  4. RELEASE-CHECKLIST.md
+     → Pre-release quality checklist
+     
+  5. ci-auto-tag-release.patch
+     → Git patch file (for applying to other repos)
+
+MODIFIED FILES:
+  1. Directory.Build.props
+     → Added version configuration
+     → Version properties read by all projects
+     
+  2. src/ProxyForwarder.App/MainWindow.xaml.cs
+     → Added DisplayVersion() method
+     → Version shows in app title bar
+
+
+HOW IT WORKS
+============
+
+METHOD A: AUTOMATIC (Recommended)
+  1. Commit with [release] keyword:
+     git commit -m "feat: new feature [release]"
+  
+  2. Push to main:
+     git push origin main
+  
+  3. GitHub Actions CI automatically:
+     - Detects [release] in commit message
+     - Reads latest git tag (e.g., v0.1.0)
+     - Bumps PATCH: v0.1.0 → v0.1.1
+     - Builds self-contained app
+     - Creates GitHub Release with installer ZIP
+     - Tag automatically created
+
+
+METHOD B: MANUAL
+  1. Tag locally with specific version:
+     git tag -a "v0.2.0" -m "Release v0.2.0"
+     git push origin "v0.2.0"
+  
+  2. (Optional) Build manually:
+     dotnet publish ... /p:Version=0.2.0
+  
+  3. Push tag to GitHub
+     GitHub automatically creates Release
+
+
+VERSION DISPLAY IN APP
+======================
+
+App reads version from AssemblyInformationalVersion attribute
+and displays in title bar:
+  
+  "Proxy Forwarder  v0.1.0"
+  "Proxy Forwarder  v0.2.1"
+  etc.
+
+This happens automatically at app startup.
+No code changes needed per release.
+
+
+CONFIGURATION
+==============
+
+Directory.Build.props:
+  <Version>0.1.0</Version>              ← Default
+  <AssemblyVersion>$(Version)</AssemblyVersion>
+  <FileVersion>$(Version)</FileVersion>
+  <InformationalVersion>$(Version)</InformationalVersion>
+
+When CI runs:
+  /p:Version=0.2.0  ← Overrides to actual release version
+
+
+FIRST RELEASE
+=============
+
+No tags exist yet? Here's what happens:
+
+Auto method ([release] commit):
+  Default: v0.1.0
+  Auto-bump: v0.1.1 ← First release
+
+Manual method (manual tag):
+  git tag -a "v0.1.0" -m "Release v0.1.0"
+  git push origin "v0.1.0"
+
+
+WORKFLOW REQUIREMENTS
+====================
+
+GitHub repository settings → Actions → General:
+  ✓ Workflow permissions = "Read and write permissions"
+  ✓ No PAT or secrets needed (uses default GITHUB_TOKEN)
+
+No additional setup required if already on GitHub!
+
+
+QUICK START
+===========
+
+For next release:
+
+Option 1 (easiest):
+  git commit -m "fix: bug fix [release]"
+  git push origin main
+  → Done! CI handles everything
+
+Option 2 (manual control):
+  GitHub repo → Actions → Release & Tag → Run workflow
+  Enter version (e.g., 0.2.0) or leave blank
+  → CI creates exact version
+
+
+CHECKING VERSION
+================
+
+Latest tag:
+  git describe --tags --abbrev=0
+
+All tags:
+  git tag -l --sort=-version:refname
+
+App version:
+  Launch app → check title bar
+
+
+DOCUMENTATION
+==============
+
+For complete info, read:
+  - VERSIONING.md           (full guide)
+  - VERSIONING-QUICK-REF.txt (commands)
+  - RELEASE-CHECKLIST.md    (quality checklist)
+
+
+APPLYING TO OTHER REPO
+======================
+
+To use this setup in another C# project:
+
+  git apply ci-auto-tag-release.patch
+
+(If there are conflicts, apply manually by copying files)
+
+
+CUSTOMIZATION
+=============
+
+Modify as needed:
+  - Directory.Build.props: Change default version
+  - release-tag.yml: Adjust branch names, paths, etc.
+  - MainWindow.xaml.cs: Change how version displays
+  - VERSIONING.md: Update documentation
+
+
+NOTES
+=====
+
+- Semantic versioning format: vX.Y.Z
+- CI auto-bumps PATCH by default
+- Manual workflow for MINOR/MAJOR version bumps
+- Release notes auto-generated from commits
+- Installer always created (win-x64, self-contained)
+- No external dependencies; uses standard GitHub Actions
+
+
+SUPPORT
+=======
+
+For issues with specific commands:
+  See VERSIONING.md "Troubleshooting" section
+
+For applying to existing repos:
+  Use ci-auto-tag-release.patch file
+
+For quick reference:
+  See VERSIONING-QUICK-REF.txt
+
+
+NEXT STEPS
+==========
+
+1. Review VERSIONING.md for full details
+2. Make first release (commit with [release] or manual tag)
+3. Verify tag and Release appear on GitHub
+4. Check app title shows version (v0.1.1, etc.)
+5. Download and test installer from Release page

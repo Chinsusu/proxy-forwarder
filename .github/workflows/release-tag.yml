@@ -1,0 +1,70 @@
+name: Release & Tag
+
+on:
+  # Manual trigger - você pode entrar a versão (opcional)
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (ex: 0.3.2). Deixe vazio para auto-bump patch.'
+        required: false
+  # Auto trigger - push para main com [release] na mensagem
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: write   # para criar tag/release
+
+jobs:
+  release:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]') }}
+    runs-on: windows-latest
+    env:
+      APP_CSProj: src/ProxyForwarder.App/ProxyForwarder.App.csproj
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Precisa do histórico para ler tags antigas
+
+      - name: Determine version
+        id: ver
+        shell: bash
+        run: |
+          INPUT_VER="${{ github.event.inputs.version }}"
+          if [[ -n "$INPUT_VER" ]]; then
+            V="$INPUT_VER"
+          else
+            LAST=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')
+            if [[ -z "$LAST" ]]; then LAST="0.1.0"; fi
+            IFS='.' read -r MA MI PA <<< "$LAST"
+            PA=$((PA+1))
+            V="${MA}.${MI}.${PA}"
+          fi
+          echo "version=$V" >> $GITHUB_OUTPUT
+          echo "Resolved version: $V"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish (win-x64, self-contained)
+        shell: pwsh
+        run: |
+          dotnet publish $env:APP_CSProj -c Release -r win-x64 `
+            --self-contained true `
+            /p:Version=${{ steps.ver.outputs.version }} `
+            -o out/win-x64
+          Compress-Archive -Path out/win-x64/* -DestinationPath out/ProxyForwarder-win-x64-v${{ steps.ver.outputs.version }}.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: Proxy Forwarder v${{ steps.ver.outputs.version }}
+          files: |
+            out/ProxyForwarder-win-x64-v${{ steps.ver.outputs.version }}.zip
+          generate_release_notes: true
+
+      - name: Done
+        run: echo "Released v${{ steps.ver.outputs.version }}"
